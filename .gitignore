@@ -1,0 +1,32 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Credentials
+.env
+
+# Data
+/data/
+/cache/
+vis_nav_player.log
+.ruff_cache/
+.pytest_cache/
+
+# Experiments
+/results/
+/models/
+/logs/
+/runs/
+/data_train/
+
+# Local only: shared zips, and SuperGlue (clone it, see README)
+/_share/
+/*.zip
+/third_party/
