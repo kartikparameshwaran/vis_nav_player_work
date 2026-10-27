@@ -7,6 +7,8 @@ SPTM agent (Savinov, Dosovitskiy, Koltun, ICLR 2018) rebuilt for this challenge.
 Memory graph : one node per exploration frame; edges between consecutive frames, plus
                "visual shortcuts" between far-apart frames that a learned network R says are
                the same place for a whole WINDOW of neighbouring frames (not one lucky pair).
+               (Change 25) The drives are joined at the spawn, where they all start, and a
+               shortcut is kept only if SuperGlue confirms a long RUN of consecutive pairs.
 Localisation : R scores the camera frame against every node. Search near the previous node
                first; fall back to a global search only when nothing nearby is similar enough.
 Planning     : shortest path from the estimated node to the goal node (Change 20: weighted
@@ -35,10 +37,11 @@ from pathlib import Path
 import cv2
 import networkx as nx
 import numpy as np
+from bayes_loc import BayesLocaliser
 from geometry import Matcher, bearing_from_e, scale_ratio, shift_deg, yaw_from_e
 from my_agent import TURN_DEG, VIEW_OFFSET, _intrinsic_focal
 from vis_nav_sdk import Action, Agent, Observation, Result, SessionInfo, run
-from vlad import load_frames
+from vlad import REVERSE, load_frames
 
 SIGN = +1  # LEFT x6 shifted the picture by +26 / +23 deg on the real simulator (two mazes)
 
@@ -79,12 +82,74 @@ CHECKIN_STAGES = [  # Change 22: looser and earlier, after sptm7_r step 1565 (fr
 ]
 
 # Change 24: steering toward the waypoint photo by measured angle (teach-and-repeat style)
-STEER_MIN = 20  # SuperGlue inliers with the waypoint photo needed to trust the measured angle
+STEER_MIN = 40  # Change 26: was 20. SuperGlue inliers with the waypoint photo needed to trust the
+# measured angle. In the first run with Change 24 (maze 7, 2026-10-26) matches of 20-29 inliers gave
+# +71, +52, -64, -40 deg on consecutive steps: 3868 of 3993 ticks were turns, 35 moves forward.
 STEER_DEG = 10.0  # turn when the measured angle exceeds this; otherwise drive forward
+STEER_SPIN = 5  # Change 26: at most this many measured turns in a row (~100 deg) ...
+STEER_REST = 10  # ... or one that undoes the last; then L steers for this many steps
+STALL_FWD = 40  # Change 26: the watchdog only drops a shortcut after >= 40 forward ticks without progress
+PACE_TICKS = 4000  # Change 26: CHECKIN_STAGES pace over the first 4000 ticks, whatever the step limit
+
+# Change 27: a far relocalisation jump must be confirmed by SuperGlue: >= JUMP_MIN inliers between the
+# live view and the new node, and JUMP_MARGIN more than with the current node. Ground truth on the
+# 2026-10-26 maze 7 run (125 far jumps): this blocks all 14 jumps that moved the belief > 0.5 m further
+# from the truth (median 8 inliers) and keeps 14 of the 20 that corrected it (median 58).
+JUMP_MIN, JUMP_MARGIN = 40, 10
+
+REV_MAX = 12  # Change 28: undo-steps in a row without reaching an earlier photo, then re-plan (Change 32)
+
+# Change 32: fixes from the code audit of 2026-10-26 (things that confused the robot)
+SEEN_P = 0.3  # waypoint photo with p below this is not in view ...
+SEARCH_TICKS = 105  # ... so turn on the spot, up to a full circle (~3.44 deg per tick), to find it
+SPAWN_FRAMES = 5  # the first frames of every drive are at the spawn, where every run starts
+
+# Change 33 (from c32_m7): the planner zig-zagged between two drives that run along the same corridor
+# (route from node 65: 7 switches within ~25 photos), because a shortcut cost the same as a driven step.
+# Every switch makes the next waypoint a photo from another drive, which L was never trained on.
+SWITCH_COST = 4.0  # extra cost of every shortcut: switch drives only when it saves real distance
+SEARCH_AFTER = 4  # waypoint out of view this many decisions in a row before turning to look for it
+
+# Change 34: the front and back goal photos both look along the goal heading, so lining up with them
+# fixes only the distance along that line. c33_m7 checked in -0.01 m along it but 0.34 m to the side.
+# Before checking in, also line up with the left (or else the right) goal photo: that fixes sideways.
+SIDE_TICKS = int(round(90 / TURN_DEG))  # a ~90 deg turn
+# Change 35: when SuperGlue confirms a far jump while the photo being left still matches the live view
+# this well, both photos show the robot's current place: link them (run-time loop closing, lecture 8).
+# c33_m8: the belief moved from drive 0's photo (225 hops) to drive 1's photo of the same spot (444
+# hops); with no link between them the plan flipped and the robot drove away from the goal.
+LINK_OLD = 15
+
+# Change 38 (--smooth-steer): one steady steering decision instead of three controllers voting per step.
+# t_m52 stalled 468 decisions with L flipping LEFT/RIGHT every step (its argmax sits on the boundary
+# when the waypoint is straight ahead); t_m7 stalled 500 with the waypoint search turning LEFT while
+# L turned RIGHT. Smooth L's probabilities over time, read "left ~ right" as "ahead", commit to a turn
+# direction, and make the search turn the way L wants.
+EMA_KEEP = 0.6  # weight of the past in L's smoothed probabilities
+TURN_MARGIN = 0.15  # a turn must beat FORWARD (and the other turn) by this much
+
+# Change 39 (--goal-watch): the approach used to start only within near_hops (3) hops on the map. In
+# t_m8 the robot stood 0.37 m from the goal while the map said 28 hops (the drive went the long way
+# round there), so it never approached. Every GOAL_WATCH_EVERY decisions, match the 4 goal photos;
+# a strong match (false matches reach ~23 inliers) starts the approach whatever the hops say.
+GOAL_WATCH_EVERY = 5
+GOAL_SEEN = 40
+
+# Change 29: no progress -> the next DETOUR_EDGES edges of the route cost DETOUR_COST times more, so
+# the planner tries another way if there is one (repeated stalls compound; nothing is deleted)
+DETOUR_EDGES, DETOUR_COST = 10, 4.0
 
 # Change 19 (fix 1A): margin check for relocalisation (VPR tutorial). The best match must beat the
 # best match elsewhere in the maze by at least 10% of the typical same-vs-different similarity gap.
 MARGIN = 0.10
+
+# Change 25: a map without false shortcuts. Ground truth on local mazes 7 and 8 (re-recorded with
+# poses): ~2/3 of the SuperGlue-verified shortcuts joined places > 0.5 m apart (repeated wall
+# textures), and the planned route used 3 of them on both mazes, so the robot circled ~5 m from the
+# goal believing it was 1-2 hops away. No inlier threshold fixed that (>= 60 still left one on the route).
+MIN_RUN = 8  # Change 25b: keep a shortcut only on a run of >= 8 verified pairs (0 false on both mazes)
+RUN_GAP = 2  # pairs allowed to be missing inside such a run
+STALL_STEPS = 150  # Change 25c: no fewer hops to the goal for this many steps -> drop the next shortcut
 
 
 class SptmAgent(Agent):
@@ -118,8 +183,22 @@ class SptmAgent(Agent):
         geo_min: int = 20,
         #Change 18: exploration mode (Change 9) is OFF unless asked for -- let SPTM navigate
         explore: bool = False,
+        #Change 25: join the drives at the spawn; sequence check of shortcuts (0 or 1 = off)
+        join_starts: bool = True,
+        min_run: int = MIN_RUN,
+        #Change 26: steer by the measured angle to the waypoint photo (Change 24), else L only
+        steer: bool = True,
+        #Change 37: "argmax" = best match + jump rules, "bayes" = Bayes filter over all photos
+        localiser: str = "argmax",
+        #Change 38: smoothed, committed steering (see EMA_KEEP)
+        smooth_steer: bool = False,
+        #Change 39: check the goal photos every few steps, not only near the goal node
+        goal_watch: bool = False,
     ) -> None:
         self.explore_on = explore
+        self.steer_on = steer
+        self.smooth_steer = smooth_steer
+        self.goal_watch = goal_watch
         self.scorer = scorer
         self.frames, self.bounds = load_frames(Path(data_dir), subsample)
         print(f"{len(self.frames)} frames from {len(self.bounds)} trajectories")
@@ -142,13 +221,39 @@ class SptmAgent(Agent):
         self.goal_min = goal_min
         ##########################
         self._img: dict[int, np.ndarray] = {}
+        #Change 25a: every exploration drive starts at the spawn (true in all 42 random local mazes
+        # checked, within 0.16 m), so join the drives there. Then every node is reachable over
+        # driven edges alone, whatever happens to the shortcuts. These edges are never removed.
+        self.trusted = {(i, i + 1) for s, e in self.bounds for i in range(s, e - 1)}
+        self.join_starts = join_starts  # Change 32: also anchors the first position belief at the spawn
+        if join_starts:
+            s0 = self.bounds[0][0]
+            for s, _ in self.bounds[1:]:
+                n_in = self.gm.match(self.gm.features(self._frame_img(s0)), self.gm.features(self._frame_img(s)),
+                                     FOCAL_GUESS if self.sg_on else None).n
+                self.G.add_edge(s0, s, weight=1.0)
+                self.trusted.add((s0, s))
+                print(f"spawn join: drive starts {s0} and {s} ({n_in} inliers)"
+                      + ("" if n_in >= 20 else " -- WARNING: weak match, do the drives start at one spot?"))
         self.shortcuts = self._shortcuts(shortcut_gap, shortcut_k, window, s_shortcut)
         #Change 10: R alone proposes shortcuts, and it confuses look-alike walls (e.g. node 1437,
         # a purple-wall corridor, was joined to the goal area, so the robot thought it was 1 hop
         # from the goal while far away). Like ORB-SLAM2's loop closing: appearance proposes,
         # geometry confirms -- keep a shortcut only if SuperGlue + RANSAC agree. Only with --superglue.
         if self.sg_on:
+            #Change 30: run the sequence check on R's candidates BEFORE SuperGlue. Verified pairs are a
+            # subset of the candidates, so a candidate that is not on a run of min_run candidates can
+            # never end up on a run of min_run verified pairs -- dropping it first changes nothing.
+            # Maze 7: SuperGlue on 352 pairs instead of 11,087 (22 s instead of 10+ min), and the
+            # final 350 shortcuts are exactly the same set.
+            if min_run > 1:
+                self.shortcuts = self._sequence_filter(self.shortcuts, min_run)
             self.shortcuts = self._verify_shortcuts(self.shortcuts, geo_min)
+        #Change 25b: a pair check alone is not enough -- a repeated wall texture gives 20-60 inliers
+        # between two different places. Two drives through the same corridor, though, keep matching
+        # frame after frame, while a look-alike wall matches for 1-3 frames (see _sequence_filter).
+        if min_run > 1:
+            self.shortcuts = self._sequence_filter(self.shortcuts, min_run)
         #Change 15b: check the sign of bearing_from_e on our own data before trusting it
         self.bear_flip = self._calibrate_bearing() if self.sg_on else None
         self.bear_ok = self.bear_flip is not None
@@ -158,9 +263,21 @@ class SptmAgent(Agent):
         # costs 1 + (40 - inliers)/20 if SuperGlue confirmed it with fewer than 40 inliers (so 20
         # inliers -> 2.0, 40+ -> 1.0). Dijkstra then prefers driven and strongly confirmed routes.
         self.G.add_edges_from(self.shortcuts, weight=1.0)
-        for (i, j), n_in in getattr(self, "sc_inliers", {}).items():
-            self.G[i][j]["weight"] = 1.0 + max(0, 40 - n_in) / 20.0
+        sc_inliers = getattr(self, "sc_inliers", {})
+        for e in self.shortcuts:  # Change 25b: only the shortcuts that passed the sequence check
+            w = 1.0 + max(0, 40 - sc_inliers[e]) / 20.0 if e in sc_inliers else 1.0
+            self.G.edges[e]["weight"] = w + SWITCH_COST  # Change 33
         print(f"graph: {self.G.number_of_edges()} edges, {len(self.shortcuts)} verified shortcuts")
+        self.stall_steps = STALL_STEPS
+        self.banned: list[tuple[int, int, dict]] = []  # Change 25c: shortcuts dropped in this session
+        self.penalised: dict[tuple[int, int], float] = {}  # Change 29: original weights of detoured edges
+        self.links: list[tuple[int, int]] = []  # Change 35: same-place links added during this session
+        #Change 37: the Bayes filter moves along the drives, the verified shortcuts and the spawn join
+        self.bayes = None
+        if localiser == "bayes":
+            jumps = list(self.shortcuts) + [e for e in self.trusted if abs(e[0] - e[1]) != 1]
+            self.bayes = BayesLocaliser(self.n, self.bounds, jumps)
+        self.bayes_conf = 0.0
         self.h_min, self.h_max, self.s_local, self.s_reach = h_min, h_max, s_local, s_reach
         self.local_hops, self.near_hops, self.burst = local_hops, near_hops, burst
         self.scale_tol, self.budget = scale_tol, budget
@@ -233,6 +350,28 @@ class SptmAgent(Agent):
               f"rejected {len(pairs) - len(kept)} look-alikes")
         return kept
 
+    @staticmethod
+    def _sequence_filter(pairs: list[tuple[int, int]], min_run: int, gap: int = RUN_GAP) -> list[tuple[int, int]]:
+        """Change 25b: SeqSLAM-style check. Keep shortcut (i, j) only if it lies on a run of
+        >= ``min_run`` shortcuts (i+k, j+k) -- both drives going the same way -- or (i+k, j-k) --
+        opposite ways, with at most ``gap`` missing in a row. Against ground truth on mazes 7 and 8,
+        a run of >= 8 kept 350 and 485 shortcuts with none false; runs of 1-3 were 88% false."""
+        kept = set(pairs)
+
+        def run(i: int, j: int, sgn: int) -> int:
+            n = 1
+            for step in (1, -1):
+                k, miss = step, 0
+                while miss <= gap:
+                    a, b = i + k, j + sgn * k
+                    n, miss = (n + 1, 0) if (min(a, b), max(a, b)) in kept else (n, miss + 1)
+                    k += step
+            return n
+
+        out = [(i, j) for i, j in pairs if max(run(i, j, +1), run(i, j, -1)) >= min_run]
+        print(f"sequence check: kept {len(out)} of {len(pairs)} shortcuts (runs of >= {min_run} pairs)")
+        return out
+
     def _calibrate_bearing(self) -> bool | None:
         """Change 15b: self-check of bearing_from_e on exploration frames where the robot drove
         FORWARD. Frame i+1 was taken ahead of frame i, so the bearing from i to i+1 must point
@@ -290,8 +429,6 @@ class SptmAgent(Agent):
         self.t, self.node, self.hops, self.state, self.log = 0, -1, -1, "init", []
         self.prev_small, self.prev_act, self.stuck, self.queue, self.n_stuck = None, None, 0, [], 0
         self.appr_steps = 0
-    #Change 1 Add memory for the last turn and flip count:
-        self.last_turn, self.flips = None, 0
     #Change 3: Confirmation before a big jump:
         self.jump_cand, self.jump_n = -1, 0
         #################################################
@@ -313,6 +450,23 @@ class SptmAgent(Agent):
         #Change 17: which goal photo the last approach step used (0 = front, -1 = none) and how
         # many re-acquire sweeps have been tried since it was last seen
         self.last_k, self.reacq = -1, 0
+        #Change 25c: fewest hops to the goal so far, and the step when that was reached
+        self.best_hops, self.best_t = 10**9, 0
+        #Change 26: forward ticks driven (in total / when best_hops last improved), measured-turn
+        # streak and its direction, and steps left with measured steering switched off
+        self.fwd_ticks, self.fwd_at_best = 0, 0
+        self.steer_turns, self.steer_last, self.steer_off = 0, None, 0
+        #Change 28/31: earliest photo reached while reversing, and undo-steps since then
+        self.rev_node, self.rev_n = -1, 0
+        #Change 32/33: ticks spent turning on the spot to find a waypoint photo that is not in view, and
+        # for how many decisions in a row the waypoint has been out of view
+        self.wp_search, self.unseen = 0, 0
+        #Change 34: sideways line-up done / goal photo used for it (1 = left, 3 = right, None = not now)
+        self.side_done, self.side_target = False, None
+        #Change 35: inliers (photo being left, new photo) of the last far-jump check
+        self.last_jump = (0, 0)
+        #Change 38: L's smoothed probabilities, the committed turn, and the side L last leaned to
+        self.l_ema, self.commit, self.l_side = None, None, "LEFT"
         #################################################
 
 
@@ -348,6 +502,17 @@ class SptmAgent(Agent):
         self.goal = best[1] if best[0] >= self.goal_min else fallback[1]
         #################################################################
     
+        #Change 25c: a new session starts from the full map again
+        for a, b, w in self.banned:
+            self.G.add_edge(a, b, **w)
+        for e, w in self.penalised.items():  # Change 29
+            self.G.edges[e]["weight"] = w
+        for e in self.links:  # Change 35
+            if self.G.has_edge(*e):
+                self.G.remove_edge(*e)
+        self.banned, self.penalised, self.links, self._local = [], {}, [], {}
+        if self.bayes is not None:  # Change 37: every run starts at the spawn = the drives' first photos
+            self.bayes.reset([i for s, e in self.bounds for i in range(s, min(s + SPAWN_FRAMES, e))])
         #Change 20: weighted Dijkstra (was unweighted shortest path): routes prefer driven edges and
         # strongly confirmed shortcuts. `hops` stays the number of edges on the chosen route.
         self.paths = nx.single_source_dijkstra_path(self.G, self.goal, weight="weight")  # goal -> node
@@ -377,7 +542,9 @@ class SptmAgent(Agent):
         left = obs.steps_left if self.budget is None else min(obs.steps_left, self.budget - obs.step)
         #Change 21: how much of the run is used up (0..1); the check-in rule gets more willing late
         total = self.budget if self.budget is not None else obs.step + obs.steps_left
-        self.frac = obs.step / max(total, 1)
+        #Change 26: the challenge allows 60,000 ticks by default, so pacing by the whole limit would
+        # keep the strict check-in stage for ~18,000 ticks. Pace over the first PACE_TICKS instead.
+        self.frac = obs.step / max(min(total, PACE_TICKS), 1)
         if left <= 12:
             return self._out(Action.CHECKIN, "budget")
         small = cv2.resize(cv2.cvtColor(obs.image, cv2.COLOR_BGR2GRAY), (40, 30)).astype(np.float32)
@@ -392,8 +559,13 @@ class SptmAgent(Agent):
             self.stuck, self.n_stuck = 0, self.n_stuck + 1
             turn = Action.RIGHT if self.n_stuck % 2 else Action.LEFT
             self.queue = [(turn, min(8 + 3 * (self.n_stuck % 4), 20))]
-            self.node = -1  # forget where we thought we were
-            return self._out((Action.BACKWARD, 4), "stuck")
+            #Change 32: back off AWAY from what blocked us (all stuck events in c31/c31_anyloc came while
+            # reversing into a wall, and this used to back up even further), and keep the position
+            # belief: it used to be erased here, and the unchecked relocalisation that followed put the
+            # robot 4.4 m wrong (c31_anyloc step 1137). Stop reversing here too: it just hit a wall.
+            escape = Action.FORWARD if self.prev_act == "BACKWARD" else Action.BACKWARD
+            self.rev_n = REV_MAX
+            return self._out((escape, 4), "stuck")
 
         #Change 9: while exploring, skip SPTM localisation/planning and drive from the image
         if self.explore > 0:
@@ -401,44 +573,33 @@ class SptmAgent(Agent):
 
         q = np.asarray(self.scorer.embed([obs.image]), np.float32)[0]
         p = self._prob_to_all(q)
-        node = -1
-        if self.node >= 0:  # temporally consistent: look near the last estimate first
-            cand = self._local_nodes(self.node)
-            cand = cand[self.reach[cand]]
-            if len(cand):
-                j = int(cand[np.argmax(p[cand])])
-                if p[j] >= self.s_local:
-                    node = j
-        # if node < 0:  # global search
-        #     node = int(np.argmax(np.where(self.reach, p, -1.0)))
-        # self.node = node
-        ##################################################################      
-        #Change 4: Big Jump part2 
-        if node < 0:  # global search
-            g = int(np.argmax(np.where(self.reach, p, -1.0)))
-            if self.node < 0:
-                node = g  # no previous estimate (start, or after "stuck"): accept
-            elif self._ambiguous(q, g) and p[self.node] >= 0.5:
-                #Change 19b: only hold on to the previous estimate while it still matches the camera
-                # (p >= 0.5). sptm7_anyloc froze at node 691 for hundreds of steps with p = 0.00:
-                # the robot had moved on, but every new match looked ambiguous, so it never updated.
-                #Change 19 (fix 1A, margin check -- VPR tutorial): the best match is barely better
-                # than the best match somewhere ELSE in the maze, so it may be a look-alike wall.
-                # Don't jump on it; keep the previous estimate and restart the 3-frame confirmation.
-                node, self.jump_n, self.jump_cand = self.node, 0, -1
-            else:
-                # far jump: only accept once 3 frames in a row point to the same area
-                near = self.jump_cand >= 0 and bool(np.isin(g, self._local_nodes(self.jump_cand)))
-                self.jump_n = self.jump_n + 1 if near else 1
-                self.jump_cand = g
-                node = g if self.jump_n >= 3 else self.node
-        else:
-            self.jump_n = 0
+        #Change 37: --localiser bayes keeps a probability for every map photo (bayes_loc.py) instead of
+        # one best match patched with jump rules; --localiser argmax (default) is the method below.
+        node = self._bayes_node(obs, p) if self.bayes is not None else self._best_match_node(obs, q, p)
         self.node = node
 
  ##################################################################      
         path = self.paths[node][::-1]  # node ... goal
         self.hops = len(path) - 1
+
+        #Change 25c: safety net for a shortcut that slipped through the checks. If the robot has not
+        # got any closer to the goal (in hops) for STALL_STEPS steps while still far from it, drop
+        # the first shortcut on its route and plan again. Driven edges and the spawn join are never
+        # dropped, so the goal always stays reachable -- in the worst case by retracing a drive.
+        #Change 26: ... and only while the robot is actually driving: in the 2026-10-26 maze 7 run it
+        # spun on the spot, and the watchdog dropped 4 real shortcuts near the start for nothing.
+        if self.hops < self.best_hops:
+            self.best_hops, self.best_t, self.fwd_at_best = self.hops, self.t, self.fwd_ticks
+        #Change 29: and if there is no shortcut to blame (or the robot hardly drove), do not keep
+        # repeating the same stretch: make the next part of the route costlier and re-plan, so the
+        # robot tries another way where one exists (sptm7_c27 looped at nodes 654-660 for ~1000 steps).
+        elif self.t - self.best_t > self.stall_steps and self.hops > self.near_hops and self.lock == 0:
+            moved = self.fwd_ticks - self.fwd_at_best >= STALL_FWD
+            if not (moved and self._ban_shortcut(path)):
+                self._detour(path)
+            path = self.paths[node][::-1]
+            self.hops = len(path) - 1
+            self.best_hops, self.best_t, self.fwd_at_best = self.hops, self.t, self.fwd_ticks
 
         #Change 9: going nowhere? If the last STUCK_WINDOW steps visited fewer than STUCK_UNIQUE
         # different nodes (e.g. shuttling between the same two walls), the graph route is not
@@ -463,6 +624,16 @@ class SptmAgent(Agent):
         # jumps (e.g. 1 -> 4). Before 8c that jump stopped the scan after 2-3 steps, so a full
         # circle never happened. Now: start the scan at hops <= 1, then finish it whatever hops
         # says, and only reset the counter once a finished scan is followed by leaving the goal area.
+        if self.lock == 0 and self.hops > self.near_hops:  # Change 34: left the goal area: start over there
+            self.side_done, self.side_target = False, None
+        if (self.goal_watch and self.sg_on and self.lock == 0 and self.hops > self.near_hops
+                and self.t % GOAL_WATCH_EVERY == 0):  # Change 39
+            live = self.gm.features(obs.image)
+            seen = [self.gm.match(tf, live, self.focal).n for tf in self.tfeat]
+            if max(seen) >= GOAL_SEEN:
+                self.lock = 12  # the approach below takes over
+                print(f"[{self.t}] goal photo {int(np.argmax(seen))} seen ({max(seen)} inliers) "
+                      f"at {self.hops} hops on the map: approaching")
         if self.hops > 3 and self.scan >= 105:  # Change 8c: was `if self.hops > 3:`
             self.scan = 0  # left the goal area after a full look-around: allow a fresh one next time
         if self.hops <= self.near_hops or self.lock > 0 or 0 < self.scan < 105:  # Change 8c: + scan in progress
@@ -511,6 +682,37 @@ class SptmAgent(Agent):
 
         self.appr_steps = 0
         #######################################################################################################
+        #Change 28: the route runs BACKWARDS along an exploration drive -- the next node is the photo the
+        # drive took just before this one. L was only trained on waypoints AHEAD (sptm_train.sample_l:
+        # b = a + 1..LOOKAHEAD) and has no BACKWARD output, so there it turned on the spot while the
+        # measured-angle steering turned it back (sptm7_c27: 3171 of 4929 steps at nodes 640-660, the
+        # true position never changing). Teach-and-repeat in reverse instead: undo the move the drive
+        # made there (FORWARD -> BACKWARD, LEFT -> RIGHT), so the camera keeps facing the way the drive's
+        # photos were taken and localisation keeps matching them. Re-decided every step.
+        #Change 31: count progress by the EARLIEST photo reached, not by "same node as last step". In
+        # sptm7_c29 the belief flipped 1083 <-> 1085 every step, so the per-node counter reset every
+        # step and the robot alternated LEFT 2 / RIGHT 2 for ~2450 steps without moving at all.
+        #Change 32: when reversing stops making progress, re-plan around that stretch (Change 29's detour)
+        # instead of handing over to L for 20 steps: L cannot drive backwards, so it drove FORWARD and
+        # undid the reversing (c31: BACKWARD x12, then FORWARD x12, again and again at nodes 603/620).
+        nxt = path[1] if len(path) > 1 else -1
+        if nxt == node - 1 and self.traj[nxt] == self.traj[node]:
+            if self.rev_node < 0 or self.traj[node] != self.traj[self.rev_node] or node < self.rev_node:
+                self.rev_node, self.rev_n = node, 0  # reached an earlier photo: real progress
+            else:
+                self.rev_n += 1
+            if self.rev_n >= REV_MAX:
+                self._detour(path)
+                path = self.paths[node][::-1]
+                self.hops = len(path) - 1
+                self.rev_node, self.rev_n = -1, 0
+                nxt = path[1] if len(path) > 1 else -1
+            if nxt == node - 1 and self.traj[nxt] == self.traj[node]:  # still the way to go: keep reversing
+                undo = REVERSE[self.frames[nxt].action]
+                self.state = f"reverse {node}->{nxt}: undo {self.frames[nxt].action}"
+                return self._out((Action[undo], 2), "reverse")
+        else:
+            self.rev_node, self.rev_n = -1, 0
         top = min(self.h_max, self.hops)
         l = self.h_min if self.hops >= self.h_min else 0
         for k in range(top, self.h_min - 1, -1):  # furthest waypoint still "reachable"
@@ -528,24 +730,185 @@ class SptmAgent(Agent):
         # sptm7_side the robot spent ~40 steps at one left corner flipping LEFT/RIGHT (L sits on its
         # turn-or-go-straight boundary there) and then turned ~95 deg in 28 one-tick decisions.
         # L remains the fallback whenever the waypoint photo does not match well enough.
-        if self.sg_on:
+        if self.steer_off > 0:  # Change 26: measured steering is resting after a spin; L steers
+            self.steer_off -= 1
+        elif self.sg_on and self.steer_on:
             g = self._geo_steer(obs, wp, l)
             if g is not None:
                 return g
 
-        #Change 2: Anti - wobble rule change
-        name = self.scorer.locomote(obs.image, self._frame_img(wp), wp)
-        # anti-wobble: LEFT, RIGHT, LEFT (each turn undoing the last) -> go forward instead
-        if name in ("LEFT", "RIGHT"):
-            self.flips = self.flips + 1 if self.last_turn not in (None, name) else 0
-            self.last_turn = name
-            if self.flips >= 2:
-                name, self.flips, self.last_turn = "FORWARD", 0, None
+        #Change 32: the waypoint photo is not in view (and SuperGlue did not find it above): L would steer
+        # blind -- c31_anyloc: 2410 of 3589 L decisions had the waypoint at p < 0.1, and L was only ever
+        # trained on waypoints AHEAD ON THE SAME DRIVE (sptm_train.sample_l), not across shortcuts. Turn on
+        # the spot to find it first (each step re-checks p and SuperGlue); only after a full circle
+        # without finding it does L get to try.
+        #Change 33: ... but only after the waypoint has been out of view SEARCH_AFTER decisions in a row,
+        # and then committed until it is seen again or a full circle is done. In c32_m7 a one-frame
+        # search alternated with L every few steps (search 1, L 8, search 4, L 3, ...): search turned
+        # LEFT, L turned back, no progress (plateau at node 65 for ~2000 decisions).
+        if p[wp] >= SEEN_P:
+            self.unseen, self.wp_search = 0, 0  # in view: a later search may use a full circle again
         else:
-            self.flips, self.last_turn = 0, None
+            self.unseen += 1
+        if self.unseen >= SEARCH_AFTER and self.wp_search < SEARCH_TICKS:
+            # (not reset when only the waypoint changes: the belief flickers while turning, and that
+            # would restart the search every step and spin for ever)
+            self.wp_search += 3
+            self.state = f"look for wp +{l} ({self.wp_search}/{SEARCH_TICKS} ticks) p={p[wp]:.2f}"
+            # Change 38: with --smooth-steer, look the way L leans instead of always LEFT
+            look = Action[self.l_side] if self.smooth_steer else Action.LEFT
+            return self._out((look, 3), "wp-search")
+
+        #Change 32: the anti-wobble rule (Change 2: after LEFT, RIGHT, LEFT force FORWARD) is removed. It
+        # was written for the old L-only steering, drove straight past turns, and Change 26's anti-spin
+        # now handles turning back and forth.
+        if self.smooth_steer:  # Change 38
+            name = self._smooth_l(obs, wp)
+        else:
+            name = self.scorer.locomote(obs.image, self._frame_img(wp), wp)
         self.state = f"wp +{l} p={p[wp]:.2f} best={p.max():.2f}"
         n = self.burst if name in ("FORWARD", "BACKWARD") else 1
         return self._out((Action[name], n), "follow")
+
+    def _smooth_l(self, obs: Observation, wp: int) -> str:
+        """Change 38: L's decision, smoothed over time and committed. Left and right about equally
+        likely means the waypoint is straight ahead: go forward. A turn must beat forward by
+        TURN_MARGIN, and once committed the robot only switches sides on clearly stronger evidence."""
+        cur, target = obs.image, self._frame_img(wp)
+        if hasattr(self.scorer, "locomote_probs"):
+            pr = np.asarray(self.scorer.locomote_probs(cur, target, wp), float)
+        else:  # scorers without probabilities (the tests' stand-in): L's choice as one-hot
+            pick = self.scorer.locomote(cur, target, wp)
+            pr = np.array([pick == a for a in ("FORWARD", "LEFT", "RIGHT")], float)
+        self.l_ema = pr if self.l_ema is None else EMA_KEEP * self.l_ema + (1 - EMA_KEEP) * pr
+        fwd, left, right = self.l_ema
+        self.l_side = "LEFT" if left >= right else "RIGHT"
+        if abs(left - right) < TURN_MARGIN:  # no side clearly preferred: the waypoint is ahead
+            self.commit = None
+            return "FORWARD"
+        side = self.l_side
+        if self.commit not in (None, side) and abs(left - right) < 2 * TURN_MARGIN:
+            side = self.commit  # committed: switch sides only on clearly stronger evidence
+        if max(left, right) > fwd + TURN_MARGIN:
+            self.commit = side
+            return side
+        self.commit = None
+        return "FORWARD"
+
+    def _detour(self, path: list[int]) -> None:
+        """Change 29: make the next DETOUR_EDGES edges of ``path`` (node ... goal) DETOUR_COST times
+        costlier and re-plan. Edges are only made costlier, never removed, so the goal stays reachable."""
+        for a, b in list(zip(path, path[1:]))[:DETOUR_EDGES]:
+            e = (min(a, b), max(a, b))
+            self.penalised.setdefault(e, self.G.edges[e]["weight"])
+            self.G.edges[e]["weight"] *= DETOUR_COST
+        self.paths = nx.single_source_dijkstra_path(self.G, self.goal, weight="weight")
+        self._local = {}
+        new = self.paths[path[0]][::-1]
+        print(f"[{self.t}] no progress for {self.stall_steps} steps at hops {len(path) - 1}: detour around "
+              f"nodes {path[0]}..{path[min(DETOUR_EDGES, len(path) - 1)]}, next node now {new[1] if len(new) > 1 else new[0]} "
+              f"({len(new) - 1} hops)")
+
+    def _node_feat(self, i: int):
+        """SuperGlue features of map frame ``i``, cached (Change 24's waypoint cache)."""
+        if i not in self._wpf:
+            if len(self._wpf) > 200:  # keep GPU memory bounded
+                self._wpf.clear()
+            self._wpf[i] = self.gm.features(self._frame_img(i))
+        return self._wpf[i]
+
+    def _bayes_node(self, obs: Observation, p: np.ndarray) -> int:
+        """Change 37: one Bayes-filter step (bayes_loc.py). SuperGlue re-ranks the most likely photos;
+        among the plausible photos, plan from the one with the shortest route to the goal."""
+        sg = None
+        if self.sg_on:
+            live = self.gm.features(obs.image)
+            sg = lambda i: self.gm.match(self._node_feat(i), live, self.focal).n  # noqa: E731
+        self.bayes.step(np.where(self.reach, p, 0.0), sg)
+        node, self.bayes_conf = self.bayes.choose(lambda i: len(self.paths[i]) if i in self.paths else 10**9)
+        if node not in self.paths:  # only unreachable photos plausible (e.g. --no-join): keep the last one
+            node = self.node if self.node in self.paths else max(self.paths, key=lambda i: self.bayes.b[i])
+        return node
+
+    def _best_match_node(self, obs: Observation, q: np.ndarray, p: np.ndarray) -> int:
+        """The original localisation: the best match near the last node, else a far jump that must
+        be confirmed (3 frames, margin check, SuperGlue -- Changes 4, 19, 27, 32, 35)."""
+        node = -1
+        if self.node >= 0:  # temporally consistent: look near the last estimate first
+            cand = self._local_nodes(self.node)
+            cand = cand[self.reach[cand]]
+            if len(cand):
+                j = int(cand[np.argmax(p[cand])])
+                if p[j] >= self.s_local:
+                    node = j
+        # if node < 0:  # global search
+        #     node = int(np.argmax(np.where(self.reach, p, -1.0)))
+        # self.node = node
+        ##################################################################      
+        #Change 4: Big Jump part2 
+        if node < 0:  # global search
+            g = int(np.argmax(np.where(self.reach, p, -1.0)))
+            if self.node < 0:
+                #Change 32: every run starts at the spawn, where every exploration drive starts, so the
+                # first belief is the best match among the drives' first frames, not the best match
+                # anywhere in the maze (c31_anyloc began at node 25, 1.25 m from the robot).
+                if self.t == 1 and self.join_starts:
+                    spawn = np.array([i for s, e in self.bounds for i in range(s, min(s + SPAWN_FRAMES, e))])
+                    node = int(spawn[np.argmax(p[spawn])])
+                else:
+                    node = g  # no previous estimate (exploration mode forgets it on purpose): accept
+            elif self._ambiguous(q, g) and p[self.node] >= 0.5:
+                #Change 19b: only hold on to the previous estimate while it still matches the camera
+                # (p >= 0.5). sptm7_anyloc froze at node 691 for hundreds of steps with p = 0.00:
+                # the robot had moved on, but every new match looked ambiguous, so it never updated.
+                #Change 19 (fix 1A, margin check -- VPR tutorial): the best match is barely better
+                # than the best match somewhere ELSE in the maze, so it may be a look-alike wall.
+                # Don't jump on it; keep the previous estimate and restart the 3-frame confirmation.
+                node, self.jump_n, self.jump_cand = self.node, 0, -1
+            else:
+                # far jump: only accept once 3 frames in a row point to the same area
+                near = self.jump_cand >= 0 and bool(np.isin(g, self._local_nodes(self.jump_cand)))
+                self.jump_n = self.jump_n + 1 if near else 1
+                self.jump_cand = g
+                node = g if self.jump_n >= 3 else self.node
+                #Change 27: R reads ~1.00 for many look-alike places, so three frames in a row is not
+                # enough. In the maze 7 run the robot was localised to 0.1 m, 120 hops from the goal,
+                # when a jump to node 580 (2.3 m off, 34 inliers) flipped its route for good.
+                if node == g and self.sg_on and not self._jump_ok(obs, g):
+                    node = self.node
+                elif node == g and self.sg_on and self.last_jump[0] >= LINK_OLD:
+                    self._link(self.node, g)  # Change 35
+        else:
+            self.jump_n = 0
+        return node
+
+    def _link(self, a: int, b: int) -> None:
+        """Change 35: link map photos ``a`` and ``b``, which the robot has just seen as the same place,
+        and re-plan. Costs like any other drive switch; the watchdog can still drop it if it misleads."""
+        e = (min(a, b), max(a, b))
+        if a == b or self.G.has_edge(*e):
+            return
+        self.G.add_edge(*e, weight=1.0 + SWITCH_COST)
+        self.links.append(e)
+        self.paths = nx.single_source_dijkstra_path(self.G, self.goal, weight="weight")
+        self.reach[:] = False
+        self.reach[list(self.paths)] = True
+        self._local = {}
+        print(f"[{self.t}] linked {a} <-> {b}: both seen as this place "
+              f"({self.last_jump[0]} and {self.last_jump[1]} inliers)")
+
+    def _jump_ok(self, obs: Observation, g: int) -> bool:
+        """Change 27: accept a far jump to node ``g`` only if the live view matches g's photo
+        clearly (>= JUMP_MIN inliers) and clearly better than the current node's photo."""
+        live = self.gm.features(obs.image)
+        n_new = self.gm.match(self._node_feat(g), live, self.focal).n
+        n_old = self.gm.match(self._node_feat(self.node), live, self.focal).n
+        ok = n_new >= JUMP_MIN and n_new >= n_old + JUMP_MARGIN
+        self.last_jump = (n_old, n_new)  # Change 35
+        if self.verbose:
+            print(f"[{self.t}] jump {self.node} -> {g}: inliers old {n_old} new {n_new} -> "
+                  + ("accepted" if ok else "rejected"))
+        return ok
 
     def _geo_steer(self, obs: Observation, wp: int, l: int):
         """Change 24: visual teach-and-repeat step toward waypoint frame ``wp`` (``l`` hops ahead).
@@ -553,23 +916,48 @@ class SptmAgent(Agent):
         rotation between them (yaw_from_e, sign verified by tools/compare_yaw.py: + = the robot is
         turned left of the waypoint view, so turn right) and turn by that angle (<= 6 ticks ~ 20 deg
         per step), or drive forward 2 ticks when already lined up. None -> let L decide."""
-        if wp not in self._wpf:
-            if len(self._wpf) > 200:  # keep GPU memory bounded
-                self._wpf.clear()
-            self._wpf[wp] = self.gm.features(self._frame_img(wp))
-        m = self.gm.match(self._wpf[wp], self.gm.features(obs.image), self.focal)
+        m = self.gm.match(self._node_feat(wp), self.gm.features(obs.image), self.focal)
         if m.n < STEER_MIN:
             return None
         y = yaw_from_e(m, self.focal)
         if y is None:
             return None
         y = SIGN * y  # same convention as _approach: + = turn right
-        self.flips, self.last_turn = 0, None  # a measured turn is not a wobble
         self.state = f"wp +{l} steer yaw={y:+.0f} n={m.n}"
         if abs(y) > STEER_DEG:
             turn = Action.RIGHT if y > 0 else Action.LEFT
+            #Change 26: spinning on the spot -- a turn that undoes the last measured turn, or more
+            # than STEER_SPIN turns in a row -- means the angle is noise here: let L steer for a while
+            self.steer_turns = self.steer_turns + 1 if self.steer_last in (None, turn) else STEER_SPIN + 1
+            self.steer_last = turn
+            if self.steer_turns > STEER_SPIN:
+                self.steer_turns, self.steer_last, self.steer_off = 0, None, STEER_REST
+                return None
             return self._out((turn, int(np.clip(round(abs(y) / TURN_DEG), 1, 6))), "steer-turn")
+        self.steer_turns, self.steer_last = 0, None
         return self._out((Action.FORWARD, 2), "steer-fwd")
+
+    def _ban_shortcut(self, path: list[int]) -> bool:
+        """Change 25c: remove the first shortcut on ``path`` (node ... goal) whose removal still
+        leaves the robot's node connected to the goal, and re-plan. False if there is none."""
+        for a, b in zip(path, path[1:]):
+            e = (min(a, b), max(a, b))
+            if e in self.trusted:
+                continue
+            w = dict(self.G.edges[e])
+            self.G.remove_edge(*e)
+            paths = nx.single_source_dijkstra_path(self.G, self.goal, weight="weight")
+            if path[0] not in paths:  # it was the only way on: keep it
+                self.G.add_edge(*e, **w)
+                continue
+            self.banned.append((*e, w))
+            self.paths, self._local = paths, {}
+            self.reach[:] = False
+            self.reach[list(paths)] = True
+            print(f"[{self.t}] no progress for {self.stall_steps} steps at hops {len(path) - 1}: dropped "
+                  f"shortcut {e[0]}-{e[1]}, now {len(paths[path[0]]) - 1} hops")
+            return True
+        return False
 
     # ---- Change 9: autonomous exploration
 
@@ -707,6 +1095,8 @@ class SptmAgent(Agent):
         off = VIEW_OFFSET[k]  # facing photo k now, at the right distance: turn to face front
         turn = Action.RIGHT if off > 0 else Action.LEFT
         self.last_appr_turn = turn
+        if self.side_target is not None:  # Change 34: the sideways axis is lined up now
+            self.side_target, self.side_done = None, True
         self.last_k, self.reacq = 0, 0  # next: look for the front photo (re-acquire sweep if needed)
         return self._out((turn, int(round(abs(off) / TURN_DEG))), f"approach-side{k}-rotate")
 
@@ -731,7 +1121,20 @@ class SptmAgent(Agent):
         # accept it with TRACK_RELAX fewer inliers, so one weaker frame does not drop the goal.
         tracking = self.sg_on and self.lock > 0 and self.last_k == 0
         front_min = min_n - TRACK_RELAX if tracking else min_n
-        if ms[0].n >= front_min:  # front photo visible: it alone fixes the goal heading and distance
+        #Change 34: sideways line-up in progress -- use the chosen side photo, nothing else. If it is not
+        # in view, try the other side (180 deg turn); if neither is, face front again and check in as before.
+        if self.side_target is not None:
+            if ms[self.side_target].n < max(12, min_n - TRACK_RELAX):
+                if self.side_target == 1:
+                    self.side_target = 3
+                    self.state = "sideways: left photo not in view, trying the right one"
+                    return self._out((Action.RIGHT, 2 * SIDE_TICKS), "approach-sideways")
+                self.side_target, self.side_done = None, True
+                self.last_k, self.reacq = 0, 0
+                self.state = "sideways: no side photo in view, back to the front photo"
+                return self._out((Action.LEFT, SIDE_TICKS), "approach-sideways")
+            k, m = self.side_target, ms[self.side_target]
+        elif ms[0].n >= front_min:  # front photo visible: it alone fixes the goal heading and distance
             k, m = 0, ms[0]
         else:  # side/back photos only steer coarsely (90-180 deg turns), so demand a clearly stronger match
             k = int(np.argmax([x.n for x in ms]))
@@ -771,6 +1174,10 @@ class SptmAgent(Agent):
             for frac_from, ci_n, ci_head, ci_scale in CHECKIN_STAGES:
                 if getattr(self, "frac", 0.0) >= frac_from and m.n >= ci_n and abs(left) <= ci_head \
                         and abs(r - 1.0) <= ci_scale:
+                    if not self.side_done:  # Change 34: line up sideways first (left photo, then right)
+                        self.side_target = 1
+                        self.state += " -> line up sideways first (left photo)"
+                        return self._out((Action.LEFT, SIDE_TICKS), "approach-sideways")
                     self.state += f" checkin-stage>={frac_from:.0%}"
                     return self._out(Action.CHECKIN, "arrived")
         #Change 23: a SIDE/BACK photo is used to fix the robot's POSITION along that photo's direction
@@ -822,6 +1229,8 @@ class SptmAgent(Agent):
     def _out(self, a, why: str):
         act = a[0] if isinstance(a, tuple) else a
         self.prev_act = act.name if act in (Action.FORWARD, Action.BACKWARD) else None
+        if act == Action.FORWARD:  # Change 26: for the watchdog's "is it driving at all" check
+            self.fwd_ticks += a[1] if isinstance(a, tuple) else 1
         if self.verbose or why in ("arrived", "budget"):
             print(f"[{self.t}] node {self.node} hops {self.hops} {why} {a} {self.state}")
         self.log.append(dict(t=self.t, node=self.node, hops=self.hops, why=why, act=str(a), state=self.state))
@@ -832,6 +1241,8 @@ class SptmAgent(Agent):
 
 
 def main() -> None:
+    import argparse
+
     import cli
     from sptm_models import TorchScorer
 
@@ -843,13 +1254,19 @@ def main() -> None:
     parser.add_argument("--burst", type=int, default=1)
     # Change 16: default step budget 4000 (was None = only the server's limit). The agent checks in
     # at budget - 12; on a real challenge the server's own limit (obs.steps_left) still applies.
-    parser.add_argument("--budget", type=int, default=4000)
+    # Change 26: back to None. The challenge allows 60,000 ticks unless it says otherwise (SDK
+    # DEFAULT_MAX_STEPS), and a slow arrival still earns distance + heading points (up to 6 of 10),
+    # while a forced check-in at 4000 away from the goal earns 0. Pass --budget for short local tests.
+    parser.add_argument("--budget", type=int, default=None)
     parser.add_argument("--s-local", type=float, default=0.7)
     parser.add_argument("--s-reach", type=float, default=0.8)
     parser.add_argument("--s-shortcut", type=float, default=0.9)
     #######################################################################################################
     #Change 3e: 
-    parser.add_argument("--superglue", action="store_true", help="SuperPoint+SuperGlue for the goal photos")
+    #Change 36: on by default -- nearly every safeguard (shortcut and jump checks, steering, the last
+    # metre) needs it, and with only 3 attempts a forgotten flag must not cost one. --no-superglue turns it off.
+    parser.add_argument("--superglue", action=argparse.BooleanOptionalAction, default=True,
+                        help="SuperPoint+SuperGlue for the goal photos and all geometric checks")
     #Change 10: shortcut check threshold (only used with --superglue)
     parser.add_argument("--geo-min", type=int, default=20, help="min SuperGlue inliers to keep a shortcut")
     #Change 13: the local simulator draws a fresh random motion seed every run, so two runs differ
@@ -858,7 +1275,22 @@ def main() -> None:
     #Change 18: exploration mode is off by default; pass --explore to switch it back on
     parser.add_argument("--explore", action="store_true", help="enable the autonomous exploration mode (Change 9)")
     #Change 19: which place recognition to use: the trained R network, or AnyLoc (DINOv2 + VLAD)
-    parser.add_argument("--place", choices=["r", "anyloc"], default="r", help="place recognition: r | anyloc")
+    #Change 36: AnyLoc by default -- belief > 1 m off in 15-19% of steps vs 36% with R on maze 7, 1-5% on maze 8
+    parser.add_argument("--place", choices=["r", "anyloc"], default="anyloc", help="place recognition: anyloc | r")
+    #Change 25: clean map -- drives joined at the spawn, shortcuts kept only on long verified runs
+    parser.add_argument("--min-run", type=int, default=MIN_RUN, help="shortcut needs a run of this many verified pairs (0 = off)")
+    parser.add_argument("--no-join", action="store_true", help="do not join the exploration drives at the spawn")
+    #Change 26: switch the measured-angle steering (Change 24) off and let L steer alone
+    parser.add_argument("--no-steer", action="store_true", help="steer with L only, not by the measured angle")
+    #Change 37: localisation method
+    parser.add_argument("--localiser", choices=["argmax", "bayes"], default="argmax",
+                        help="argmax: best match + jump rules; bayes: Bayes filter over all map photos")
+    #Change 38: smoothed, committed steering
+    parser.add_argument("--smooth-steer", action="store_true",
+                        help="smooth L over time, 'left ~ right' = ahead, commit to a turn direction")
+    #Change 39: watch for the goal photos everywhere, not only near the goal node
+    parser.add_argument("--goal-watch", action="store_true",
+                        help="every 5 decisions match the goal photos; a strong match starts the approach")
     #######################################################################################################
     parser.add_argument("--verbose", action="store_true")
     parser.add_argument("--log-dir", type=Path, default=None)
@@ -887,6 +1319,11 @@ def main() -> None:
         goal_matcher=goal_matcher, goal_min=20 if args.superglue else 12,
         geo_min=args.geo_min,  # Change 10
         explore=args.explore,  # Change 18
+        join_starts=not args.no_join, min_run=args.min_run,  # Change 25
+        steer=not args.no_steer,  # Change 26
+        localiser=args.localiser,  # Change 37
+        smooth_steer=args.smooth_steer,  # Change 38
+        goal_watch=args.goal_watch,  # Change 39
     )
 ##################################################################################################################
     #Change 13: pass the motion seed to the local simulator (ignored for real challenge runs)

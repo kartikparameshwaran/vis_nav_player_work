@@ -125,3 +125,10 @@ class TorchScorer:
         x = to_tensor(prep([cur, wp]), self.device)
         logits = self.l(x[0:1], x[1:2])
         return ACTIONS[int(logits.argmax(1))]
+
+    @torch.no_grad()
+    def locomote_probs(self, cur: np.ndarray, wp: np.ndarray, node: int = -1) -> np.ndarray:
+        """Change 38: L's probabilities for ACTIONS (FORWARD, LEFT, RIGHT), not only the winner, so
+        the agent can tell 'turn left' from 'left and right about equal: the waypoint is ahead'."""
+        x = to_tensor(prep([cur, wp]), self.device)
+        return torch.softmax(self.l(x[0:1], x[1:2]), 1)[0].float().cpu().numpy()

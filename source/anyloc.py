@@ -145,3 +145,6 @@ class AnyLocScorer:
 
     def locomote(self, cur: np.ndarray, wp: np.ndarray, node: int = -1) -> str:
         return self.base.locomote(cur, wp, node)
+
+    def locomote_probs(self, cur: np.ndarray, wp: np.ndarray, node: int = -1) -> np.ndarray:
+        return self.base.locomote_probs(cur, wp, node)
