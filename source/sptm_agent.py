@@ -135,8 +135,20 @@ TURN_MARGIN = 0.15  # a turn must beat FORWARD (and the other turn) by this much
 GOAL_WATCH_EVERY = 5
 GOAL_SEEN = 40
 
+# Change 40 (--steer-hold): hysteresis for the measured-angle steering (Change 24). Taking control needs
+# STEER_MIN inliers with the waypoint photo; keeping it, when the previous decision was a measured one,
+# needs only STEER_KEEP -- tracking accepts weaker evidence than (re)detection (ORB-SLAM keeps tracking
+# on ~30 inliers but relocalises only on ~50; lecture 10: short-term tracker + stricter re-detector;
+# Change 17 does the same for the front goal photo). The dev-challenge dry run lost ~715 ticks at nodes
+# 3512-3520: a measured turn at 40-48 inliers, then L undid it whenever the match dipped below 40.
+STEER_KEEP = 30
+
 # Change 29: no progress -> the next DETOUR_EDGES edges of the route cost DETOUR_COST times more, so
 # the planner tries another way if there is one (repeated stalls compound; nothing is deleted)
+# Change 41 (--detour-once): ... and each edge is made costlier at most once. Repeated stalls on one
+# stretch compounded x4, x16, x64: in a dev-challenge run photos 843 and 846, three apart on one drive,
+# ended up 177 and 626 hops from the goal, and the belief flipping between them flipped the plan every
+# step (decisions 1120-1250); maze 7 (s1 suite) blew its route up from 103 to 415 hops the same way.
 DETOUR_EDGES, DETOUR_COST = 10, 4.0
 
 # Change 19 (fix 1A): margin check for relocalisation (VPR tutorial). The best match must beat the
@@ -194,11 +206,15 @@ class SptmAgent(Agent):
         smooth_steer: bool = False,
         #Change 39: check the goal photos every few steps, not only near the goal node
         goal_watch: bool = False,
+        #Change 40/41: keep measured steering down to STEER_KEEP inliers / make each edge costlier once
+        steer_hold: bool = False,
+        detour_once: bool = False,
     ) -> None:
         self.explore_on = explore
         self.steer_on = steer
         self.smooth_steer = smooth_steer
         self.goal_watch = goal_watch
+        self.steer_hold, self.detour_once = steer_hold, detour_once
         self.scorer = scorer
         self.frames, self.bounds = load_frames(Path(data_dir), subsample)
         print(f"{len(self.frames)} frames from {len(self.bounds)} trajectories")
@@ -467,6 +483,8 @@ class SptmAgent(Agent):
         self.last_jump = (0, 0)
         #Change 38: L's smoothed probabilities, the committed turn, and the side L last leaned to
         self.l_ema, self.commit, self.l_side = None, None, "LEFT"
+        #Change 40: the last decision was a measured-angle one (steer-turn / steer-fwd)
+        self.geo_last = False
         #################################################
 
 
@@ -800,6 +818,8 @@ class SptmAgent(Agent):
         costlier and re-plan. Edges are only made costlier, never removed, so the goal stays reachable."""
         for a, b in list(zip(path, path[1:]))[:DETOUR_EDGES]:
             e = (min(a, b), max(a, b))
+            if self.detour_once and e in self.penalised:  # Change 41: at most once per edge
+                continue
             self.penalised.setdefault(e, self.G.edges[e]["weight"])
             self.G.edges[e]["weight"] *= DETOUR_COST
         self.paths = nx.single_source_dijkstra_path(self.G, self.goal, weight="weight")
@@ -917,13 +937,14 @@ class SptmAgent(Agent):
         turned left of the waypoint view, so turn right) and turn by that angle (<= 6 ticks ~ 20 deg
         per step), or drive forward 2 ticks when already lined up. None -> let L decide."""
         m = self.gm.match(self._node_feat(wp), self.gm.features(obs.image), self.focal)
-        if m.n < STEER_MIN:
+        need = STEER_KEEP if self.steer_hold and self.geo_last else STEER_MIN  # Change 40
+        if m.n < need:
             return None
         y = yaw_from_e(m, self.focal)
         if y is None:
             return None
         y = SIGN * y  # same convention as _approach: + = turn right
-        self.state = f"wp +{l} steer yaw={y:+.0f} n={m.n}"
+        self.state = f"wp +{l} steer yaw={y:+.0f} n={m.n}" + (" (hold)" if m.n < STEER_MIN else "")
         if abs(y) > STEER_DEG:
             turn = Action.RIGHT if y > 0 else Action.LEFT
             #Change 26: spinning on the spot -- a turn that undoes the last measured turn, or more
@@ -1229,6 +1250,7 @@ class SptmAgent(Agent):
     def _out(self, a, why: str):
         act = a[0] if isinstance(a, tuple) else a
         self.prev_act = act.name if act in (Action.FORWARD, Action.BACKWARD) else None
+        self.geo_last = why in ("steer-turn", "steer-fwd")  # Change 40
         if act == Action.FORWARD:  # Change 26: for the watchdog's "is it driving at all" check
             self.fwd_ticks += a[1] if isinstance(a, tuple) else 1
         if self.verbose or why in ("arrived", "budget"):
@@ -1292,6 +1314,11 @@ def main(agent_cls: type | None = None) -> None:
     #Change 39: watch for the goal photos everywhere, not only near the goal node
     parser.add_argument("--goal-watch", action="store_true",
                         help="every 5 decisions match the goal photos; a strong match starts the approach")
+    #Change 40/41: commit to decisions instead of re-deciding every step
+    parser.add_argument("--steer-hold", action="store_true",
+                        help="measured steering, once in control, keeps it down to STEER_KEEP inliers")
+    parser.add_argument("--detour-once", action="store_true",
+                        help="a stall makes each route edge costlier at most once (no stacking)")
     #######################################################################################################
     parser.add_argument("--verbose", action="store_true")
     parser.add_argument("--log-dir", type=Path, default=None)
@@ -1325,6 +1352,7 @@ def main(agent_cls: type | None = None) -> None:
         localiser=args.localiser,  # Change 37
         smooth_steer=args.smooth_steer,  # Change 38
         goal_watch=args.goal_watch,  # Change 39
+        steer_hold=args.steer_hold, detour_once=args.detour_once,  # Change 40/41
     )
 ##################################################################################################################
     #Change 13: pass the motion seed to the local simulator (ignored for real challenge runs)

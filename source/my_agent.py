@@ -21,14 +21,19 @@ class MyAgent(SptmAgent):
     """The course's name for "your agent": the SPTM agent, with nothing changed."""
 
 
-def with_defaults(argv: list[str]) -> list[str]:
-    """The best runs' flags, added unless already given: a forgotten flag cannot cost an attempt."""
+def with_defaults(
+    argv: list[str],
+    flags: tuple[str, ...] = ("--smooth-steer", "--verbose"),
+    log_dir: str = "logs/my_agent",
+) -> list[str]:
+    """The best runs' flags, added unless already given: a forgotten flag cannot cost an attempt.
+    my_agent_3073.py and my_agent_2767.py pass their own flags and log directory."""
     out = list(argv)
-    for flag in ("--smooth-steer", "--verbose"):
+    for flag in flags:
         if flag not in out:
             out.append(flag)
     if not any(a == "--log-dir" or a.startswith("--log-dir=") for a in out):
-        out += ["--log-dir", "logs/my_agent"]
+        out += ["--log-dir", log_dir]
     return out
 
 
