@@ -16,7 +16,9 @@ import sys
 
 from sptm_agent import SptmAgent, main
 
-MyAgent = SptmAgent  # the course's name for "your agent"
+
+class MyAgent(SptmAgent):
+    """The course's name for "your agent": the SPTM agent, with nothing changed."""
 
 
 def with_defaults(argv: list[str]) -> list[str]:
@@ -32,4 +34,4 @@ def with_defaults(argv: list[str]) -> list[str]:
 
 if __name__ == "__main__":
     sys.argv[1:] = with_defaults(sys.argv[1:])
-    main()
+    main(MyAgent)

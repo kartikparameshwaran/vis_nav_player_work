@@ -1240,7 +1240,8 @@ class SptmAgent(Agent):
         return [f"SPTM node {self.node} goal {getattr(self, 'goal', -1)} hops {self.hops}", self.state]
 
 
-def main() -> None:
+def main(agent_cls: type | None = None) -> None:
+    """``agent_cls``: the class to build -- my_agent.py passes MyAgent; default SptmAgent."""
     import argparse
 
     import cli
@@ -1313,7 +1314,7 @@ def main() -> None:
     if args.superglue:
         from sg_matcher import SGMatcher
         goal_matcher = SGMatcher(device=args.device)
-    agent = SptmAgent(
+    agent = (agent_cls or SptmAgent)(
         data, scorer, burst=args.burst, budget=args.budget, s_local=args.s_local,
         s_reach=args.s_reach, s_shortcut=args.s_shortcut, log_dir=args.log_dir, verbose=args.verbose,
         goal_matcher=goal_matcher, goal_min=20 if args.superglue else 12,

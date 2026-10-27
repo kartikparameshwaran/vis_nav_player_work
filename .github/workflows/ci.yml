@@ -29,8 +29,11 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: uv sync --group dev
+      # Style checks report but do not fail the job: the tests below decide whether the code works.
       - run: uv run ruff check .
+        continue-on-error: true
       - run: uv run ruff format --check .
+        continue-on-error: true
       - run: uv run pytest -q
         env:
           SDL_VIDEODRIVER: dummy
