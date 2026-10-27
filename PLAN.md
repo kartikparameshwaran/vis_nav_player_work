@@ -21,7 +21,7 @@ position), intrinsics (f = 92 px), ~3000 exploration frames from 3 drives with t
 each, steps left. Hidden: pose, map, goal position, collisions, how far you missed by.
 So the task is **place recognition + planning on a topological map + a last-metre alignment**.
 
-## The agent in this repo (`source/my_agent.py`)
+## The Bayes-filter agent (`source/bayes_agent.py`)
 
 1. **Calibrate turn direction** (12 ticks): LEFT x6, measure which way the picture shifts, RIGHT x6.
 2. **Localise** with a Bayes filter over the exploration frames (`navigator.BeliefFilter`): last

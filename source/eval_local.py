@@ -22,7 +22,7 @@ os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
 os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
 
 import cli  # noqa: E402
-from my_agent import MyAgent  # noqa: E402
+from bayes_agent import BayesAgent  # noqa: E402
 from vis_nav_sdk import run  # noqa: E402
 
 
@@ -64,7 +64,7 @@ def main() -> None:
             t0 = time.time()
             try:
                 data = cli.record_exploration_data(seed)
-                agent = MyAgent(
+                agent = BayesAgent(
                     data, descriptor=args.descriptor, subsample=args.subsample, head=args.head, burst=args.burst,
                     tau=args.tau, near_hops=args.near_hops, cache_dir=Path("cache") / f"local-{seed}",
                     log_dir=args.log_dir, budget=args.budget,

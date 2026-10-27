@@ -18,7 +18,7 @@ Place recog. : the learned R network, or (Change 19, --place anyloc) an AnyLoc-s
 Waypoint     : the furthest node along that path that R still says is "the same place" as
                what we see now (so it is close and reachable).
 Locomotion   : a learned network L maps (current frame, waypoint frame) -> FORWARD/LEFT/RIGHT.
-Last metre   : same RANSAC servo on the four goal photos as my_agent.py, then CHECKIN.
+Last metre   : same RANSAC servo on the four goal photos as bayes_agent.py, then CHECKIN.
 Exploration  : (Change 9) when navigation goes nowhere -- stuck in a small region, or a full
                look-around at the "goal" finds no goal photo -- drop the graph for a while and
                drive the maze directly from the image: forward while the floor ahead is open,
@@ -39,7 +39,7 @@ import networkx as nx
 import numpy as np
 from bayes_loc import BayesLocaliser
 from geometry import Matcher, bearing_from_e, scale_ratio, shift_deg, yaw_from_e
-from my_agent import TURN_DEG, VIEW_OFFSET, _intrinsic_focal
+from bayes_agent import TURN_DEG, VIEW_OFFSET, _intrinsic_focal
 from vis_nav_sdk import Action, Agent, Observation, Result, SessionInfo, run
 from vlad import REVERSE, load_frames
 

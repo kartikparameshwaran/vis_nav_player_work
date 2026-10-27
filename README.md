@@ -86,7 +86,9 @@ uv run source/rl/play.py --challenge <id>                     # one real attempt
 
 | file | what |
 |---|---|
-| `source/my_agent.py` | the skeleton: `__init__`, `setup`, `act`, `finish`, `hud`, `panel`, each with a comment saying when it runs |
+| `source/my_agent.py` | the challenge entry point: the SPTM agent (`source/sptm_agent.py`) with the flags of its best local runs (`--smooth-steer --verbose --log-dir logs/my_agent`) |
+| `source/sptm_agent.py` | the SPTM agent: topological map of the exploration frames, AnyLoc + SuperGlue localisation, L network steering, last-metre servo |
+| `source/bayes_agent.py` | the earlier Bayes-filter agent (`BayesAgent`), used by `eval_local.py` and the tests |
 | `source/keyboard_agent.py` | drive with the arrow keys |
 | `source/baseline_agent.py`, `source/vlad.py` | RootSIFT + VLAD place recognition over the exploration frames, a graph of them, and the next move along the shortest path |
 | `source/cli.py` | the shared command line, `.env` loading, `--local` |

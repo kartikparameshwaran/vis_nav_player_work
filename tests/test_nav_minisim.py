@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import minisim
 import numpy as np
-from my_agent import MyAgent
+from bayes_agent import BayesAgent
 from navigator import BeliefFilter, TopoMap
 from vlad import load_frames
 
@@ -14,7 +14,7 @@ def test_agent_reaches_goal_on_minimaze(tmp_path):
     for seed in (2, 5):
         d = tmp_path / f"s{seed}"
         world, start, goal = minisim.make_episode(seed, d, n=5, length=45)
-        agent = MyAgent(d, n_clusters=64, cache_dir=d / "cache")
+        agent = BayesAgent(d, n_clusters=64, cache_dir=d / "cache")
         results.append(minisim.run_episode(agent, world, start, goal, max_steps=4000))
     print(results)
     # Smoke test only: the whole loop runs, moves, and ends with a CHECKIN and a valid score.
