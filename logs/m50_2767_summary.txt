@@ -1,0 +1,15 @@
+=== m50_2767.txt: maze 50, motion seed 2664226132, 2726 decisions ===
+result: perfect, 6.0 points, 5466 ticks
+closest to the goal: 0.12 m at step 2726 (believed hops 0); at the end 0.12 m
+belief error: median 0.16 m, more than 1 m off in 2% of steps
+wrong far jumps: 0
+longest time not moving (within 0.1 m): 328 steps from step 1035, believed nodes 1479 x312, 1480 x8, 1475 x6
+decisions: follow 1455, wp-search 681, steer-fwd 234, steer-turn 200, reverse 127, stuck 6, recover 6, approach-turn 6, approach-side1-turn 3, approach-side1-back 3, approach-fwd 3, approach-sideways 1, approach-side1-rotate 1
+events: reverse steps (Change 28) 131, detours (Change 29) 7, dropped shortcuts (Change 25c) 5, far jumps accepted (Change 27) 8, far jumps rejected (Change 27) 106, stuck recoveries 6
+top view: closest to the goal: 0.09 m at step 2726 (tick 5466), heading 2 deg off the goal heading
+top view: closest while facing within 20 deg of the goal heading: 0.09 m at step 2726
+top view: steps spent within 0.5 m of the goal: 73   |   at the end: 0.09 m from the goal, 2 deg off its heading
+top view: saved logs\m50_2767_topview.png
+likely causes:
+  - LAST METRE: checked in inside the best bands
+  - STALL: 328 decisions within 0.1 m from step 1035 (follow 285, steer-turn 34); 'follow' and 'steer-turn' alternate every 5.7 decisions

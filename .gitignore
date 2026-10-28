@@ -19,15 +19,13 @@ vis_nav_player.log
 .ruff_cache/
 .pytest_cache/
 
-# Experiments
+# Experiments (models/, logs/ are kept in the repo; data_train/ is 5.5 GB and rebuilt by train/gen_data.py)
 /results/
-/models/
-/logs/
 /runs/
 /data_train/
 
-# Local only: shared zips, and SuperGlue (clone it, see README)
+# Local only: shared zips (old copies; third_party.zip is over GitHub's 100 MB file limit).
+# third_party/SuperGlue is kept in the repo; its own clone history (.git-orig) is not.
 /_share/
 /*.zip
-/third_party/
-/lecture slides/
+/third_party/SuperGlue/.git-orig/

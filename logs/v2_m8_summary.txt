@@ -1,0 +1,14 @@
+=== v2_m8.txt: maze 8, motion seed 2664226132, 1290 decisions ===
+result: perfect, 6.0 points, 2618 ticks
+closest to the goal: 0.02 m at step 1290 (believed hops 6); at the end 0.02 m
+belief error: median 0.13 m, more than 1 m off in 0% of steps
+wrong far jumps: 0
+longest time not moving (within 0.1 m): 125 steps from step 1119, believed nodes 483 x71, 487 x14, 476 x10
+decisions: follow 745, steer-fwd 193, steer-turn 191, wp-search 128, approach-turn 13, reverse 9, approach-side1-turn 4, approach-side1-back 2, approach-side3-turn 1, goal-scan 1, approach-side3-fwd 1, approach-sideways 1, approach-side1-rotate 1
+events: reverse steps (Change 28) 9, detours (Change 29) 0, dropped shortcuts (Change 25c) 0, far jumps accepted (Change 27) 9, far jumps rejected (Change 27) 13, stuck recoveries 0
+top view: closest to the goal: 0.02 m at step 1289 (tick 2592), heading 91 deg off the goal heading
+top view: closest while facing within 20 deg of the goal heading: 0.02 m at step 1290
+top view: steps spent within 0.5 m of the goal: 266   |   at the end: 0.02 m from the goal, 1 deg off its heading
+top view: saved logs\v2_m8_topview.png
+likely causes:
+  - LAST METRE: checked in inside the best bands

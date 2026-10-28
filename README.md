@@ -48,13 +48,14 @@ an NVIDIA GPU everything still runs, several times slower. On Windows use **Powe
    # no NVIDIA GPU: the same with --index-url https://download.pytorch.org/whl/cpu
    ```
    ⚠ A later plain `uv sync` removes PyTorch again (see [Troubleshooting](#troubleshooting)).
-4. **Get SuperGlue** (Magic Leap's code and weights; not redistributed here):
+4. **SuperGlue** (Magic Leap's code and weights, non-commercial research licence in
+   `third_party/SuperGlue/LICENSE`) is included in this private repo at `third_party/SuperGlue/`.
+   If it is missing, clone it:
    ```powershell
    git clone https://github.com/magicleap/SuperGluePretrainedNetwork.git third_party/SuperGlue
    ```
-5. **Get the two trained networks** (`sptm_l.pt`, `sptm_r.pt`, about 45 MB each; too large
-   for the repo itself). Download both from this repo's **Releases** page (release `models-v1`)
-   into a `models/` folder, or with the GitHub CLI:
+5. **The two trained networks** (`models/sptm_l.pt`, `models/sptm_r.pt`, about 45 MB each) are
+   included too. If they are missing, download both from the **Releases** page (release `models-v1`):
    ```powershell
    gh release download models-v1 --repo kartikparameshwaran/Robot-Perception-Challenge --dir models
    ```
@@ -164,8 +165,10 @@ Details, with the reason behind every setting, are in the comments of `source/sp
 | `source/cli.py` | command line, `.env`, `--local` |
 | `pyproject.toml`, `uv.lock`, `.python-version` | the Python environment |
 
-**Not in git, but needed** (see Setup): `models/sptm_l.pt`, `models/sptm_r.pt`,
-`third_party/SuperGlue/`, `.env`. Created automatically: `data/`, `cache/`, `logs/`.
+**In git since version 4:** `models/` (the two trained networks), `third_party/SuperGlue/`, `logs/`
+(run logs) and `lecture slides/`. **Not in git, but needed:** `.env` (your API key; copy `.env.example`).
+Created automatically: `data/` (exploration photos, 0.5 GB), `cache/` (3.7 GB). Too large for GitHub,
+rebuilt by `source/train/gen_data.py`: `data_train/` (5.5 GB).
 
 **Tools for developing** (not used by the agent):
 
