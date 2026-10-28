@@ -143,6 +143,14 @@ GOAL_SEEN = 40
 # 3512-3520: a measured turn at 40-48 inliers, then L undid it whenever the match dipped below 40.
 STEER_KEEP = 30
 
+# Change 43 (with --map-links): a map link joins two photos that agree on the map AND in the images, but
+# on the local mazes 1-3% of them had a short wall stub between the photos (two views of one open area:
+# no image test separated them -- sideways direction, homography fit and runs of matching pairs all
+# failed). So a link is watched once it is among the next LINK_LOOK edges of the route: a bump (the stuck
+# check) or no fewer hops within LINK_PATIENCE decisions drops it at once, and the planner goes another
+# way. Like Change 25c's dropped shortcuts, it is back for the next session.
+LINK_LOOK, LINK_PATIENCE = 3, 30
+
 # Change 29: no progress -> the next DETOUR_EDGES edges of the route cost DETOUR_COST times more, so
 # the planner tries another way if there is one (repeated stalls compound; nothing is deleted)
 # Change 41 (--detour-once): ... and each edge is made costlier at most once. Repeated stalls on one
@@ -209,6 +217,9 @@ class SptmAgent(Agent):
         #Change 40/41: keep measured steering down to STEER_KEEP inliers / make each edge costlier once
         steer_hold: bool = False,
         detour_once: bool = False,
+        #Change 42: a map in metres adds verified same-place links (map_ticks: and every edge costs ticks)
+        map_links: bool = False,
+        map_ticks: bool = False,
     ) -> None:
         self.explore_on = explore
         self.steer_on = steer
@@ -284,6 +295,16 @@ class SptmAgent(Agent):
             w = 1.0 + max(0, 40 - sc_inliers[e]) / 20.0 if e in sc_inliers else 1.0
             self.G.edges[e]["weight"] = w + SWITCH_COST  # Change 33
         print(f"graph: {self.G.number_of_edges()} edges, {len(self.shortcuts)} verified shortcuts")
+        #Change 42 (--map-links): the routes retraced the drives' wandering -- on the dev challenge the
+        # planned route alone was ~2,150 ticks against a true shortest of ~760. A map in metres
+        # (metric_map.py) links photos that are one place and costs every edge in ticks; on the five
+        # local mazes the planned routes got 9-37% shorter (tools/route_check.py).
+        self.map_pos = self.map_head = None
+        self.map_ticks = False
+        self.map_links: list[tuple[int, int]] = []
+        self.map_link_set: set[tuple[int, int]] = set()  # Change 43: the links the watchdog looks after
+        if (map_links or map_ticks) and self.sg_on:
+            self.add_map_links(Path(data_dir), ticks=map_ticks)
         self.stall_steps = STALL_STEPS
         self.banned: list[tuple[int, int, dict]] = []  # Change 25c: shortcuts dropped in this session
         self.penalised: dict[tuple[int, int], float] = {}  # Change 29: original weights of detoured edges
@@ -485,6 +506,8 @@ class SptmAgent(Agent):
         self.l_ema, self.commit, self.l_side = None, None, "LEFT"
         #Change 40: the last decision was a measured-angle one (steer-turn / steer-fwd)
         self.geo_last = False
+        #Change 43: the map link being watched, and the decision, hops and stuck count when it began
+        self.link_watch, self.link_t, self.link_hops, self.link_stuck = None, 0, 0, 0
         #################################################
 
 
@@ -599,6 +622,9 @@ class SptmAgent(Agent):
  ##################################################################      
         path = self.paths[node][::-1]  # node ... goal
         self.hops = len(path) - 1
+        if self.map_link_set and self._watch_links(path):  # Change 43: a link that led nowhere was dropped
+            path = self.paths[node][::-1]
+            self.hops = len(path) - 1
 
         #Change 25c: safety net for a shortcut that slipped through the checks. If the robot has not
         # got any closer to the goal (in hops) for STALL_STEPS steps while still far from it, drop
@@ -902,13 +928,50 @@ class SptmAgent(Agent):
             self.jump_n = 0
         return node
 
+    def add_map_links(self, data_dir: Path, motion: dict | None = None, ticks: bool = False) -> None:
+        """Change 42: build the metric map (metric_map.py) and add the same-place links it proposes and
+        SuperGlue confirms, each costing what a verified shortcut costs (1 + SWITCH_COST photo hops).
+        ``ticks`` (--map-ticks): instead cost EVERY edge in ticks, plus SWITCH_TICKS for a jump to other
+        photos. That planned 34% shorter routes on maze 8 but drove 2x longer (5,406 vs 2,618 ticks):
+        the cheapest routes ran drives backwards and hopped between drives, and the robot, which steers
+        to look like the next photo, lost its waypoint 4x as often. ``motion``: per-label motion for
+        the map (tools pass values learned without the maze they check). Runs before connecting."""
+        import metric_map as mm
+
+        t0 = time.time()
+        drives = mm.load_drives(data_dir)
+        meas = [mm.measurements(self.gm, dr["images"], Path("cache") / "odometry") for dr in drives]
+        where = mm.frame_index(self.frames, drives)
+        closures = [(where[a], where[b]) for a, b in self.shortcuts]
+        c0, q0 = meas[0]["comp"][0], meas[0]["conf"][0]
+        start = float(c0) if q0 >= mm.COMPASS_MIN and not np.isnan(c0) else 0.0  # fixes the frame only
+        xy, heads, _ = mm.build_map(drives, meas, closures, start, self.gm, motion)
+        self.map_pos = np.array([xy[d][k] for d, k in where])
+        self.map_head = np.array([heads[d][k] for d, k in where])
+        links, n_cand, n_checked = mm.propose_links(self.frames, self.map_pos, self.map_head, self.gm,
+                                                     self.G.has_edge)
+        self.G.add_edges_from(((a, b) for a, b, _ in links), weight=1.0 + SWITCH_COST)
+        self.map_ticks = ticks
+        if ticks:
+            for a, b in self.G.edges:
+                self.G.edges[a, b]["weight"] = mm.edge_cost(self.frames, self.map_pos, self.map_head, a, b)
+        self.map_links = [(a, b) for a, b, _ in links]
+        self.map_link_set = {(min(a, b), max(a, b)) for a, b in self.map_links}
+        print(f"map links: {len(links)} added ({n_checked} of {n_cand} candidates checked with SuperGlue)"
+              + ("; every edge now costs its ticks" if ticks else "") + f" ({time.time() - t0:.0f} s)")
+
     def _link(self, a: int, b: int) -> None:
         """Change 35: link map photos ``a`` and ``b``, which the robot has just seen as the same place,
         and re-plan. Costs like any other drive switch; the watchdog can still drop it if it misleads."""
         e = (min(a, b), max(a, b))
         if a == b or self.G.has_edge(*e):
             return
-        self.G.add_edge(*e, weight=1.0 + SWITCH_COST)
+        if self.map_ticks:  # Change 42 --map-ticks: edges cost ticks, so this one does too
+            import metric_map as mm
+
+            self.G.add_edge(*e, weight=mm.edge_cost(self.frames, self.map_pos, self.map_head, *e))
+        else:
+            self.G.add_edge(*e, weight=1.0 + SWITCH_COST)
         self.links.append(e)
         self.paths = nx.single_source_dijkstra_path(self.G, self.goal, weight="weight")
         self.reach[:] = False
@@ -957,6 +1020,35 @@ class SptmAgent(Agent):
             return self._out((turn, int(np.clip(round(abs(y) / TURN_DEG), 1, 6))), "steer-turn")
         self.steer_turns, self.steer_last = 0, None
         return self._out((Action.FORWARD, 2), "steer-fwd")
+
+    def _watch_links(self, path: list[int]) -> bool:
+        """Change 43: watch the first map link among the next LINK_LOOK edges of ``path`` (node ... goal);
+        drop it after a bump or LINK_PATIENCE decisions without fewer hops, and re-plan. True if dropped."""
+        ahead = [(min(a, b), max(a, b)) for a, b in zip(path, path[1:LINK_LOOK + 1])]
+        link = next((e for e in ahead if e in self.map_link_set and self.G.has_edge(*e)), None)
+        if link != self.link_watch:  # another link (or none) ahead now: start watching it
+            self.link_watch, self.link_t, self.link_hops, self.link_stuck = link, self.t, self.hops, self.n_stuck
+            return False
+        if link is None:
+            return False
+        bumped = self.n_stuck > self.link_stuck
+        if not bumped and (self.t - self.link_t <= LINK_PATIENCE or self.hops < self.link_hops):
+            return False
+        w = dict(self.G.edges[link])
+        self.G.remove_edge(*link)
+        paths = nx.single_source_dijkstra_path(self.G, self.goal, weight="weight")
+        if path[0] not in paths:  # it was the only way on: keep it, and give it another LINK_PATIENCE
+            self.G.add_edge(*link, **w)
+            self.link_t, self.link_stuck = self.t, self.n_stuck
+            return False
+        self.banned.append((*link, w))
+        self.paths, self._local = paths, {}
+        self.reach[:] = False
+        self.reach[list(paths)] = True
+        self.link_watch = None
+        why = "bumped into something" if bumped else f"no fewer hops in {LINK_PATIENCE} steps"
+        print(f"[{self.t}] map link {link[0]}-{link[1]} dropped ({why}), now {len(paths[path[0]]) - 1} hops")
+        return True
 
     def _ban_shortcut(self, path: list[int]) -> bool:
         """Change 25c: remove the first shortcut on ``path`` (node ... goal) whose removal still
@@ -1319,6 +1411,11 @@ def main(agent_cls: type | None = None) -> None:
                         help="measured steering, once in control, keeps it down to STEER_KEEP inliers")
     parser.add_argument("--detour-once", action="store_true",
                         help="a stall makes each route edge costlier at most once (no stacking)")
+    #Change 42: plan on a map in metres
+    parser.add_argument("--map-links", action="store_true",
+                        help="build a metric map before connecting and add its verified same-place links")
+    parser.add_argument("--map-ticks", action="store_true",
+                        help="experimental: like --map-links, and cost every edge in ticks (drove 2x longer on maze 8)")
     #######################################################################################################
     parser.add_argument("--verbose", action="store_true")
     parser.add_argument("--log-dir", type=Path, default=None)
@@ -1353,6 +1450,7 @@ def main(agent_cls: type | None = None) -> None:
         smooth_steer=args.smooth_steer,  # Change 38
         goal_watch=args.goal_watch,  # Change 39
         steer_hold=args.steer_hold, detour_once=args.detour_once,  # Change 40/41
+        map_links=args.map_links, map_ticks=args.map_ticks,  # Change 42
     )
 ##################################################################################################################
     #Change 13: pass the motion seed to the local simulator (ignored for real challenge runs)

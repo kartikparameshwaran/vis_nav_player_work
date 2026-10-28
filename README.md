@@ -17,6 +17,8 @@ heading and path efficiency. The course site has the full rules and a tutorial:
 |---|---|
 | Development Challenge, version 1 (`my_agent_3073.py`, dry run) | **6 / 10**: 0.049 m from the goal, 0.2° off, SPL 0.25, 3,073 of 10,000 steps |
 | Development Challenge, version 2 (`my_agent_2767.py`) | **6 / 10**: 0.035 m from the goal, 0.5° off, SPL 0.27, 2,767 of 10,000 steps |
+| Development Challenge, version 3 (`my_agent_1872.py`) | **6 / 10**: 0.009 m from the goal, 1.6° off, SPL 0.41, 1,872 of 10,000 steps |
+| local maze 8, version 2 / version 3 | 6 / 10 in 2,618 / 5,406 steps (one run each: version 3 is not yet proven better) |
 | local maze 8 | 6 / 10 (4,595 steps) |
 | local maze 52 | 6 / 10 (8,581 steps) |
 | local maze 7 | 0 (an earlier run without `--smooth-steer` scored 6 / 10) |
@@ -109,6 +111,11 @@ Two named versions, run the same way (`uv run source/my_agent_3073.py` or `uv ru
 - `my_agent_2767.py`: version 2, which adds `--steer-hold` (measured steering keeps control down to 30
   inliers once it has it, so L no longer undoes its turns) and `--detour-once` (stalls cannot stack
   detours on one stretch of route): 2,767 steps on the Development Challenge. Logs: `logs/my_agent_2767/`.
+- `my_agent_1872.py`: version 3, version 2 planning on a map in metres (`--map-ticks`,
+  `source/metric_map.py`): before connecting it places every exploration photo on a map (a grid
+  compass from vanishing points, SuperGlue rotations, loop closures), links photos the map and
+  SuperGlue agree are one place, and costs every route edge in ticks; a link that leads into a bump
+  is dropped at once. 1,872 steps on the Development Challenge. Logs: `logs/my_agent_1872/`.
 
 The starter kit's own tools still work: `uv run source/keyboard_agent.py --local 7` (drive by
 hand: arrows move, space checks in, esc quits) and `uv run source/baseline_agent.py --local 7`.
@@ -141,7 +148,8 @@ Details, with the reason behind every setting, are in the comments of `source/sp
 | file | role |
 |---|---|
 | `source/my_agent.py` | entry point: class `MyAgent`, the SPTM agent with its best flags |
-| `source/my_agent_3073.py`, `source/my_agent_2767.py` | version 1 (= `my_agent.py`, 3,073 steps) and version 2 (+ `--steer-hold --detour-once`, 2,767 steps) |
+| `source/my_agent_3073.py`, `source/my_agent_2767.py`, `source/my_agent_1872.py` | version 1 (= `my_agent.py`, 3,073 steps), version 2 (+ `--steer-hold --detour-once`, 2,767 steps), version 3 (+ `--map-ticks`, 1,872 steps) |
+| `source/metric_map.py` | the map in metres for version 3: grid compass, step rotations, loop closures, verified links |
 | `source/sptm_agent.py` | the agent: map, localisation, planning, steering, last metre |
 | `source/sptm_models.py` | the trained networks (R: same place?, L: which move?) |
 | `source/anyloc.py` | AnyLoc place recognition (DINOv2 + VLAD) |
@@ -162,6 +170,8 @@ Details, with the reason behind every setting, are in the comments of `source/sp
 | `tools/run_check.py` | runs the agent on a local maze and compares the run with the true positions |
 | `tools/run_suite.py` | the same on several mazes, one table: is a change better everywhere? |
 | `tools/top_view.py` | picture of a local run: the maze, the true path, the goal |
+| `tools/odometry_check.py` | how accurately the map places every photo, against the true positions (`--plot` draws it) |
+| `tools/route_check.py` | how long the planned routes are, with and without the map links, against the true shortest route; `--dev` for the Development maze |
 | `source/sptm_train.py`, `source/train/` | retraining the networks |
 | `source/keyboard_agent.py`, `source/baseline_agent.py` | the starter kit's manual driver and baseline |
 | `source/eval_local.py`, `source/summarize.py`, `source/rl/`, `hpc/` | starter kit extras: batch evaluation, an RL demo, NYU HPC scripts |
