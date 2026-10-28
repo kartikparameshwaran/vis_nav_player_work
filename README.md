@@ -18,6 +18,7 @@ heading and path efficiency. The course site has the full rules and a tutorial:
 | Development Challenge, version 1 (`my_agent_3073.py`, dry run) | **6 / 10**: 0.049 m from the goal, 0.2° off, SPL 0.25, 3,073 of 10,000 steps |
 | Development Challenge, version 2 (`my_agent_2767.py`) | **6 / 10**: 0.035 m from the goal, 0.5° off, SPL 0.27, 2,767 of 10,000 steps |
 | Development Challenge, version 3 (`my_agent_1872.py`) | **6 / 10**: 0.009 m from the goal, 1.6° off, SPL 0.41, 1,872 of 10,000 steps |
+| Development Challenge, version 4 (`my_agent_1820.py`) | **6 / 10**: SPL 0.42, 1,820 of 10,000 steps (one run; version 3 alone later gave 2,247 and one stuck run) |
 | local maze 8, version 2 / version 3 | 6 / 10 in 2,618 / 5,406 steps (one run each: version 3 is not yet proven better) |
 | local maze 8 | 6 / 10 (4,595 steps) |
 | local maze 52 | 6 / 10 (8,581 steps) |
@@ -116,6 +117,10 @@ Two named versions, run the same way (`uv run source/my_agent_3073.py` or `uv ru
   compass from vanishing points, SuperGlue rotations, loop closures), links photos the map and
   SuperGlue agree are one place, and costs every route edge in ticks; a link that leads into a bump
   is dropped at once. 1,872 steps on the Development Challenge. Logs: `logs/my_agent_1872/`.
+- `my_agent_1820.py`: version 4, version 3 that thinks when confused (`--think-confused`): after 3
+  decisions at the same photo it checks its view with SuperGlue against the next 5 photos of its route
+  and believes one that clearly matches better (only forward along the route, never within 8 hops of
+  the goal). It costs time, not steps. 1,820 steps on the Development Challenge. Logs: `logs/my_agent_1820/`.
 
 The starter kit's own tools still work: `uv run source/keyboard_agent.py --local 7` (drive by
 hand: arrows move, space checks in, esc quits) and `uv run source/baseline_agent.py --local 7`.
@@ -148,7 +153,7 @@ Details, with the reason behind every setting, are in the comments of `source/sp
 | file | role |
 |---|---|
 | `source/my_agent.py` | entry point: class `MyAgent`, the SPTM agent with its best flags |
-| `source/my_agent_3073.py`, `source/my_agent_2767.py`, `source/my_agent_1872.py` | version 1 (= `my_agent.py`, 3,073 steps), version 2 (+ `--steer-hold --detour-once`, 2,767 steps), version 3 (+ `--map-ticks`, 1,872 steps) |
+| `source/my_agent_3073.py`, `source/my_agent_2767.py`, `source/my_agent_1872.py`, `source/my_agent_1820.py` | version 1 (= `my_agent.py`, 3,073 steps), version 2 (+ `--steer-hold --detour-once`, 2,767 steps), version 3 (+ `--map-ticks`, 1,872 steps), version 4 (+ `--think-confused`, 1,820 steps) |
 | `source/metric_map.py` | the map in metres for version 3: grid compass, step rotations, loop closures, verified links |
 | `source/sptm_agent.py` | the agent: map, localisation, planning, steering, last metre |
 | `source/sptm_models.py` | the trained networks (R: same place?, L: which move?) |

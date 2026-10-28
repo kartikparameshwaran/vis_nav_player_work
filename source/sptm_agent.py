@@ -97,6 +97,14 @@ PACE_TICKS = 4000  # Change 26: CHECKIN_STAGES pace over the first 4000 ticks, w
 # from the truth (median 8 inliers) and keeps 14 of the 20 that corrected it (median 58).
 JUMP_MIN, JUMP_MARGIN = 40, 10
 
+# Change 44 (--think-confused): time is not scored, steps are. When the believed photo has not changed
+# for CONFUSED_STEPS decisions (stuck, searching for the waypoint, undoing without progress), think before
+# moving: check the live view with SuperGlue against the next THINK_AHEAD photos of the route, and believe a
+# route photo that clearly matches better (JUMP_MIN, and JUMP_MARGIN more than the believed photo). Only
+# forward along the route, and not within near_hops + THINK_AHEAD of the goal, where those photos ARE the
+# goal area and an early "arrived" started a 360-deg goal scan again and again.
+CONFUSED_STEPS, THINK_AHEAD = 3, 5
+
 REV_MAX = 12  # Change 28: undo-steps in a row without reaching an earlier photo, then re-plan (Change 32)
 
 # Change 32: fixes from the code audit of 2026-10-26 (things that confused the robot)
@@ -220,12 +228,15 @@ class SptmAgent(Agent):
         #Change 42: a map in metres adds verified same-place links (map_ticks: and every edge costs ticks)
         map_links: bool = False,
         map_ticks: bool = False,
+        #Change 44: when the believed photo stays the same, check the next route photos with SuperGlue
+        think_confused: bool = False,
     ) -> None:
         self.explore_on = explore
         self.steer_on = steer
         self.smooth_steer = smooth_steer
         self.goal_watch = goal_watch
         self.steer_hold, self.detour_once = steer_hold, detour_once
+        self.think_confused, self.same_n = think_confused, 0  # Change 44
         self.scorer = scorer
         self.frames, self.bounds = load_frames(Path(data_dir), subsample)
         print(f"{len(self.frames)} frames from {len(self.bounds)} trajectories")
@@ -513,6 +524,7 @@ class SptmAgent(Agent):
 
     def setup(self, info: SessionInfo) -> None:
         self._reset()
+        self.same_n = 0  # Change 44
         self.focal = _intrinsic_focal(info)
         self.targets = info.targets
         # self.tfeat = [self.matcher.features(t) for t in self.targets]
@@ -617,7 +629,15 @@ class SptmAgent(Agent):
         #Change 37: --localiser bayes keeps a probability for every map photo (bayes_loc.py) instead of
         # one best match patched with jump rules; --localiser argmax (default) is the method below.
         node = self._bayes_node(obs, p) if self.bayes is not None else self._best_match_node(obs, q, p)
+        self.same_n = self.same_n + 1 if node == self.node else 0  # Change 44: decisions at this photo
         self.node = node
+        #Change 44: confused (the same photo CONFUSED_STEPS decisions in a row)? think before moving
+        if (self.think_confused and self.sg_on and self.same_n >= CONFUSED_STEPS
+                and len(self.paths[node]) - 1 > self.near_hops + THINK_AHEAD):
+            better = self._think(obs, node)
+            if better != node:
+                node = self.node = better
+                self.same_n = 0
 
  ##################################################################      
         path = self.paths[node][::-1]  # node ... goal
@@ -854,6 +874,18 @@ class SptmAgent(Agent):
         print(f"[{self.t}] no progress for {self.stall_steps} steps at hops {len(path) - 1}: detour around "
               f"nodes {path[0]}..{path[min(DETOUR_EDGES, len(path) - 1)]}, next node now {new[1] if len(new) > 1 else new[0]} "
               f"({len(new) - 1} hops)")
+
+    def _think(self, obs: Observation, node: int) -> int:
+        """Change 44: SuperGlue inliers of the live view with ``node`` and with the next THINK_AHEAD photos of
+        its route; the route photo that clearly matches best (JUMP_MIN, and JUMP_MARGIN more) becomes the node."""
+        ahead = self.paths[node][::-1][1:THINK_AHEAD + 1]
+        live = self.gm.features(obs.image)
+        here = self.gm.match(self._node_feat(node), live, self.focal).n
+        n, best = max((self.gm.match(self._node_feat(j), live, self.focal).n, j) for j in ahead)
+        if n >= JUMP_MIN and n >= here + JUMP_MARGIN:
+            print(f"[{self.t}] thought it over: at route photo {best} ({n} inliers), not {node} ({here})")
+            return best
+        return node
 
     def _node_feat(self, i: int):
         """SuperGlue features of map frame ``i``, cached (Change 24's waypoint cache)."""
@@ -1414,6 +1446,8 @@ def main(agent_cls: type | None = None) -> None:
     #Change 42: plan on a map in metres
     parser.add_argument("--map-links", action="store_true",
                         help="build a metric map before connecting and add its verified same-place links")
+    parser.add_argument("--think-confused", action="store_true",
+                        help="when the believed photo stays the same, check the next route photos with SuperGlue")
     parser.add_argument("--map-ticks", action="store_true",
                         help="experimental: like --map-links, and cost every edge in ticks (drove 2x longer on maze 8)")
     #######################################################################################################
@@ -1451,6 +1485,7 @@ def main(agent_cls: type | None = None) -> None:
         goal_watch=args.goal_watch,  # Change 39
         steer_hold=args.steer_hold, detour_once=args.detour_once,  # Change 40/41
         map_links=args.map_links, map_ticks=args.map_ticks,  # Change 42
+        think_confused=args.think_confused,  # Change 44
     )
 ##################################################################################################################
     #Change 13: pass the motion seed to the local simulator (ignored for real challenge runs)
