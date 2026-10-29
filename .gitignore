@@ -19,9 +19,8 @@ vis_nav_player.log
 .ruff_cache/
 .pytest_cache/
 
-# Experiments (models/, logs/ are kept in the repo; data_train/ is 5.5 GB and rebuilt by train/gen_data.py)
+# Experiments (models/, logs/, runs/ (reports) are kept in the repo; data_train/ is 5.5 GB, rebuilt by train/gen_data.py)
 /results/
-/runs/
 /data_train/
 
 # Local only: shared zips (old copies; third_party.zip is over GitHub's 100 MB file limit).
