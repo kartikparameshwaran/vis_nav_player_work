@@ -1,0 +1,16 @@
+=== m50_1820.txt: maze 50, motion seed 2664226132, 3481 decisions ===
+result: perfect, 6.0 points, 6740 ticks
+closest to the goal: 0.12 m at step 3481 (believed hops 6); at the end 0.12 m
+belief error: median 0.17 m, more than 1 m off in 3% of steps
+wrong far jumps: 1
+    step 939: node 731 -> 448, belief error 0.2 -> 2.9 m
+longest time not moving (within 0.1 m): 250 steps from step 655, believed nodes 661 x106, 731 x51, 740 x50
+decisions: follow 1664, wp-search 837, reverse 524, steer-fwd 264, steer-turn 179, approach-side1-turn 3, approach-side1-back 3, approach-fwd 3, stuck 1, recover 1, approach-sideways 1, approach-side1-rotate 1
+events: reverse steps (Change 28) 524, detours (Change 29) 12, dropped shortcuts (Change 25c) 3, far jumps accepted (Change 27) 8, far jumps rejected (Change 27) 113, stuck recoveries 1
+top view: closest to the goal: 0.10 m at step 3481 (tick 6740), heading 4 deg off the goal heading
+top view: closest while facing within 20 deg of the goal heading: 0.10 m at step 3481
+top view: steps spent within 0.5 m of the goal: 49   |   at the end: 0.10 m from the goal, 4 deg off its heading
+top view: saved logs\m50_1820_topview.png
+likely causes:
+  - LAST METRE: checked in inside the best bands
+  - STALL: 250 decisions within 0.1 m from step 655 (wp-search 174, follow 75)

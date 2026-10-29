@@ -1,0 +1,16 @@
+=== v4_m26.txt: maze 26, motion seed 2664226132, 2725 decisions ===
+result: failed, 0.0 points, 4988 ticks
+closest to the goal: 1.51 m at step 1034 (believed hops 205); at the end 2.67 m
+belief error: median 0.34 m, more than 1 m off in 12% of steps
+wrong far jumps: 0
+longest time not moving (within 0.1 m): 1292 steps from step 1433, believed nodes 405 x535, 404 x509, 407 x159
+decisions: reverse 1575, follow 859, wp-search 169, steer-turn 61, steer-fwd 57, stuck 2, recover 2
+events: reverse steps (Change 28) 1580, detours (Change 29) 94, dropped shortcuts (Change 25c) 3, far jumps accepted (Change 27) 1, far jumps rejected (Change 27) 69, stuck recoveries 2
+top view: closest to the goal: 1.51 m at step 1033 (tick 1660), heading 131 deg off the goal heading
+top view: closest while facing within 20 deg of the goal heading: 1.51 m at step 1066
+top view: never inside the scoring zone (<= 0.2 m and <= 20 deg at the same moment)
+top view: steps spent within 0.5 m of the goal: 0   |   at the end: 2.67 m from the goal, 45 deg off its heading
+top view: saved logs\v4_m26_topview.png
+likely causes:
+  - LOCALISATION: belief > 1 m off in 12% of steps
+  - STALL: 1292 decisions within 0.1 m from step 1433 (reverse 1293)

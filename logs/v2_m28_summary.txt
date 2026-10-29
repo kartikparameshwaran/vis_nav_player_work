@@ -1,0 +1,14 @@
+=== v2_m28.txt: maze 28, motion seed 2664226132, 2510 decisions ===
+result: perfect, 6.0 points, 4971 ticks
+closest to the goal: 0.01 m at step 2510 (believed hops 1); at the end 0.01 m
+belief error: median 0.18 m, more than 1 m off in 3% of steps
+wrong far jumps: 0
+longest time not moving (within 0.1 m): 81 steps from step 1327, believed nodes 206 x68, 928 x7, 927 x5
+decisions: follow 1025, reverse 839, wp-search 321, steer-fwd 153, steer-turn 148, stuck 6, recover 6, approach-side2-turn 6, approach-side2-fwd 2, approach-side2-rotate 1, approach-sideways 1, approach-side1-fwd 1, approach-side1-rotate 1
+events: reverse steps (Change 28) 851, detours (Change 29) 23, dropped shortcuts (Change 25c) 1, far jumps accepted (Change 27) 9, far jumps rejected (Change 27) 33, stuck recoveries 6
+top view: closest to the goal: 0.01 m at step 2509 (tick 4945), heading 86 deg off the goal heading
+top view: closest while facing within 20 deg of the goal heading: 0.01 m at step 2510
+top view: steps spent within 0.5 m of the goal: 141   |   at the end: 0.01 m from the goal, 3 deg off its heading
+top view: saved logs\v2_m28_topview.png
+likely causes:
+  - LAST METRE: checked in inside the best bands

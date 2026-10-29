@@ -1,0 +1,14 @@
+=== gp_m45.txt: maze 45, motion seed 2664226132, 1463 decisions ===
+result: perfect, 6.0 points, 2738 ticks
+closest to the goal: 0.07 m at step 1461 (believed hops 9); at the end 0.07 m
+belief error: median 0.16 m, more than 1 m off in 0% of steps
+wrong far jumps: 0
+longest time not moving (within 0.1 m): 111 steps from step 1161, believed nodes 2111 x40, 2115 x21, 2114 x21
+decisions: follow 799, reverse 226, wp-search 164, steer-fwd 146, steer-turn 105, approach-turn 8, stuck 4, recover 4, approach-side3-turn 3, approach-back 1, approach-sideways 1, approach-side1-turn 1, approach-side1-rotate 1
+events: reverse steps (Change 28) 232, detours (Change 29) 11, dropped shortcuts (Change 25c) 1, far jumps accepted (Change 27) 3, far jumps rejected (Change 27) 8, stuck recoveries 4
+top view: closest to the goal: 0.07 m at step 1460 (tick 2683), heading 16 deg off the goal heading
+top view: closest while facing within 20 deg of the goal heading: 0.07 m at step 1460
+top view: steps spent within 0.5 m of the goal: 217   |   at the end: 0.07 m from the goal, 6 deg off its heading
+top view: saved logs\gp_m45_topview.png
+likely causes:
+  - LAST METRE: checked in inside the best bands

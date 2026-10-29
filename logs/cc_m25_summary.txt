@@ -1,0 +1,15 @@
+=== cc_m25.txt: maze 25, motion seed 2664226132, 1585 decisions ===
+result: perfect, 6.0 points, 2965 ticks
+closest to the goal: 0.02 m at step 1583 (believed hops 1); at the end 0.02 m
+belief error: median 0.10 m, more than 1 m off in 0% of steps
+wrong far jumps: 0
+longest time not moving (within 0.1 m): 287 steps from step 457, believed nodes 1513 x78, 38 x62, 36 x40
+decisions: follow 844, reverse 283, steer-fwd 194, wp-search 127, steer-turn 115, stuck 5, recover 5, approach-side2-turn 4, approach-side2-fwd 2, approach-confirm 2, approach-side2-rotate 1, approach-sideways 1, approach-side1-fwd 1, approach-side1-rotate 1
+events: reverse steps (Change 28) 285, detours (Change 29) 4, dropped shortcuts (Change 25c) 2, far jumps accepted (Change 27) 2, far jumps rejected (Change 27) 7, stuck recoveries 5
+top view: closest to the goal: 0.02 m at step 1582 (tick 2937), heading 89 deg off the goal heading
+top view: closest while facing within 20 deg of the goal heading: 0.02 m at step 1583
+top view: steps spent within 0.5 m of the goal: 22   |   at the end: 0.02 m from the goal, 0 deg off its heading
+top view: saved logs\cc_m25_topview.png
+likely causes:
+  - LAST METRE: checked in inside the best bands
+  - STALL: 287 decisions within 0.1 m from step 457 (follow 223, reverse 41)

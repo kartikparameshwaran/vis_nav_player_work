@@ -1,0 +1,15 @@
+=== v4_m27.txt: maze 27, motion seed 2664226132, 1752 decisions ===
+result: partial, 5.0 points, 3868 ticks
+closest to the goal: 0.09 m at step 1744 (believed hops 1); at the end 0.11 m
+belief error: median 0.17 m, more than 1 m off in 0% of steps
+wrong far jumps: 0
+longest time not moving (within 0.1 m): 370 steps from step 455, believed nodes 1307 x206, 1300 x62, 1303 x57
+decisions: follow 754, wp-search 585, steer-fwd 209, steer-turn 148, reverse 39, approach-turn 6, approach-side1-turn 5, approach-side1-fwd 3, approach-fwd 1, approach-sideways 1, approach-side1-rotate 1
+events: reverse steps (Change 28) 39, detours (Change 29) 4, dropped shortcuts (Change 25c) 1, far jumps accepted (Change 27) 3, far jumps rejected (Change 27) 39, stuck recoveries 0
+top view: closest to the goal: 0.09 m at step 1743 (tick 3819), heading 89 deg off the goal heading
+top view: closest while facing within 20 deg of the goal heading: 0.11 m at step 1750
+top view: steps spent within 0.5 m of the goal: 42   |   at the end: 0.11 m from the goal, 9 deg off its heading
+top view: saved logs\v4_m27_topview.png
+likely causes:
+  - LAST METRE: checked in inside the best bands
+  - STALL: 370 decisions within 0.1 m from step 455 (wp-search 277, follow 94)

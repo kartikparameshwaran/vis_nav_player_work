@@ -1,0 +1,21 @@
+=== v2_m29.txt: maze 29, motion seed 2664226132, 2737 decisions ===
+result: failed, 0.0 points, 4988 ticks
+closest to the goal: 3.62 m at step 1458 (believed hops 49); at the end 5.81 m
+belief error: median 0.17 m, more than 1 m off in 5% of steps
+wrong far jumps: 13
+    step 996: node 107 -> 2107, belief error 0.1 -> 0.7 m
+    step 1611: node 401 -> 2102, belief error 0.1 -> 2.3 m
+    step 1616: node 402 -> 2102, belief error 0.2 -> 2.4 m
+    step 1620: node 402 -> 2102, belief error 0.2 -> 2.4 m
+    step 1631: node 402 -> 2102, belief error 0.2 -> 2.4 m
+    step 1674: node 402 -> 2102, belief error 0.1 -> 2.2 m
+longest time not moving (within 0.1 m): 478 steps from step 2259, believed nodes 401 x224, 402 x203, 400 x29
+decisions: follow 1211, reverse 911, wp-search 346, steer-fwd 163, steer-turn 86, stuck 10, recover 10
+events: reverse steps (Change 28) 932, detours (Change 29) 33, dropped shortcuts (Change 25c) 1, far jumps accepted (Change 27) 11, far jumps rejected (Change 27) 10, stuck recoveries 10
+top view: closest to the goal: 3.62 m at step 1457 (tick 2581), heading 176 deg off the goal heading
+top view: closest while facing within 20 deg of the goal heading: 3.77 m at step 1499
+top view: never inside the scoring zone (<= 0.2 m and <= 20 deg at the same moment)
+top view: steps spent within 0.5 m of the goal: 0   |   at the end: 5.81 m from the goal, 135 deg off its heading
+top view: saved logs\v2_m29_topview.png
+likely causes:
+  - STALL: 478 decisions within 0.1 m from step 2259 (reverse 226, follow 140); 'reverse' and 'follow' alternate every 2.1 decisions

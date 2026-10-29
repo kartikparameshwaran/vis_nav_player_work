@@ -1,0 +1,18 @@
+=== v4_m30.txt: maze 30, motion seed 2664226132, 1709 decisions ===
+result: perfect, 6.0 points, 3359 ticks
+closest to the goal: 0.09 m at step 1709 (believed hops 3); at the end 0.09 m
+belief error: median 0.12 m, more than 1 m off in 0% of steps
+wrong far jumps: 3
+    step 379: node 934 -> 1527, belief error 0.1 -> 0.7 m
+    step 383: node 931 -> 1527, belief error 0.1 -> 0.6 m
+    step 390: node 934 -> 1527, belief error 0.1 -> 0.6 m
+longest time not moving (within 0.1 m): 157 steps from step 648, believed nodes 2274 x63, 2273 x61, 2259 x5
+decisions: follow 673, reverse 576, steer-fwd 151, wp-search 150, steer-turn 122, approach-turn 15, approach-side1-back 5, approach-side3-turn 4, approach-back 4, stuck 2, recover 2, approach-side1-turn 2, approach-side3-fwd 1, approach-sideways 1, approach-side1-rotate 1
+events: reverse steps (Change 28) 580, detours (Change 29) 23, dropped shortcuts (Change 25c) 2, far jumps accepted (Change 27) 4, far jumps rejected (Change 27) 73, stuck recoveries 2
+top view: closest to the goal: 0.04 m at step 1709 (tick 3359), heading 2 deg off the goal heading
+top view: closest while facing within 20 deg of the goal heading: 0.04 m at step 1709
+top view: steps spent within 0.5 m of the goal: 74   |   at the end: 0.04 m from the goal, 2 deg off its heading
+top view: saved logs\v4_m30_topview.png
+likely causes:
+  - LAST METRE: checked in inside the best bands
+  - MAP GAP: the plan flipped 1x while the belief was right (step 992: 2239->778 hops 6->310); two drives of the same place are not linked (1 run-time links made)

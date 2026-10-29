@@ -1,0 +1,15 @@
+=== r2_m67.txt: maze 67, motion seed 2664226132, 769 decisions ===
+result: (not found)
+closest to the goal: 5.06 m at step 152 (believed hops 9); at the end 5.10 m
+belief error: median 0.17 m, more than 1 m off in 1% of steps
+wrong far jumps: 0
+longest time not moving (within 0.1 m): 315 steps from step 209, believed nodes 740 x316
+decisions: follow 195, approach-side2-turn 141, approach-side2-back 120, approach-side3-turn 114, wp-search 44, reverse 30, approach-side3-back 24, goal-scan 21, steer-turn 18, steer-fwd 14, approach-reacquire 12, approach-search 11, approach-turn 10, approach-side3-rotate 4, approach-side1-back 2, stuck 2, recover 2, approach-fwd 1, approach-back 1, approach-side1-fwd 1, approach-side1-turn 1, approach-side1-rotate 1
+events: reverse steps (Change 28) 30, detours (Change 29) 0, dropped shortcuts (Change 25c) 0, far jumps accepted (Change 27) 1, far jumps rejected (Change 27) 61, stuck recoveries 2
+top view: closest to the goal: 5.06 m at step 151 (tick 341), heading 64 deg off the goal heading
+top view: closest while facing within 20 deg of the goal heading: 5.08 m at step 687
+top view: never inside the scoring zone (<= 0.2 m and <= 20 deg at the same moment)
+top view: steps spent within 0.5 m of the goal: 0   |   at the end: 5.10 m from the goal, 30 deg off its heading
+top view: saved logs\r2_m67_topview.png
+likely causes:
+  - STALL: 315 decisions within 0.1 m from step 209 (approach-side2-turn 126, approach-side2-back 102); 'approach-side2-turn' and 'approach-side2-back' alternate every 1.3 decisions

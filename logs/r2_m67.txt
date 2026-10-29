@@ -1,0 +1,883 @@
+recording exploration data for local maze 67 into data\local-67 ...
+exploration data: data\local-67 (3244 frames on 3 routes)
+SPTM scorer on cuda
+Using cache found in C:\Users\Kartik Parameshwaran/.cache\torch\hub\facebookresearch_dinov2_main
+C:\Users\Kartik Parameshwaran/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+C:\Users\Kartik Parameshwaran/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+C:\Users\Kartik Parameshwaran/.cache\torch\hub\facebookresearch_dinov2_main\dinov2\layers\block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+AnyLoc scorer: dinov2_vits14 on cuda, K=32, PCA 256
+AnyLoc: building a 32-word vocabulary from 2697 exploration frames ...
+AnyLoc calibration: different places ~ 0.290, same place ~ 0.445
+Loaded SuperPoint model
+Loaded SuperGlue model ("indoor" weights)
+2697 frames from 3 trajectories
+spawn join: drive starts 0 and 715 (40 inliers)
+spawn join: drive starts 0 and 1550 (40 inliers)
+sequence check: kept 429 of 1588 shortcuts (runs of >= 8 pairs)
+geometric check (SuperGlue): kept 429 of 429 shortcuts, rejected 0 look-alikes
+sequence check: kept 429 of 429 shortcuts (runs of >= 8 pairs)
+bearing check: 16/20 forward pairs point ahead -> sign OK
+graph: 3125 edges, 429 verified shortcuts
+map: measuring traj_0 (862 photos, about a minute per 800; cached afterwards) ...
+map: measuring traj_1 (1022 photos, about a minute per 800; cached afterwards) ...
+map: measuring traj_2 (1360 photos, about a minute per 800; cached afterwards) ...
+map links: 352 added (969 of 2894 candidates checked with SuperGlue); every edge now costs its ticks (259 s)
+checking your agent on a sample frame...
+goal place: 0 more photos of the goal spot linked to it: []
+goal: node 130 (view 0, 0 inliers; R-best 130)
+[1] node 0 hops 32 follow (<Action.LEFT: 4>, 1) wp +1 p=0.00 best=0.23
+starting the local simulator...
+┌─ local ─────────────────────────────────────────────────────────────────────┐
+│ Local maze 67                                                               │
+│ no attempt spent, nothing recorded  ·  replay with motion_seed=2664226132   │
+│                                                                             │
+│ same maze anywhere:  run(agent, "local:67")                                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+goal place: 0 more photos of the goal spot linked to it: []
+goal: node 743 (view 3, 33 inliers; R-best 226)
+[1] node 0 hops 29 steer-turn (<Action.LEFT: 4>, 4) wp +1 steer yaw=-15 n=72
+[2] node 0 hops 29 steer-turn (<Action.LEFT: 4>, 6) wp +2 steer yaw=-21 n=56
+[3] node 0 hops 29 steer-turn (<Action.LEFT: 4>, 6) wp +5 steer yaw=-39 n=45
+[4] node 1 hops 30 reverse (<Action.LEFT: 4>, 2) reverse 1->0: undo RIGHT
+[5] node 716 hops 27 follow (<Action.LEFT: 4>, 1) wp +5 p=1.00 best=1.00
+[6] node 716 hops 27 follow (<Action.LEFT: 4>, 1) wp +5 p=1.00 best=1.00
+[7] node 716 hops 27 follow (<Action.FORWARD: 1>, 1) wp +5 p=1.00 best=1.00
+[8] thought it over: at route photo 719 (83 inliers), not 716 (44)
+[8] node 719 hops 24 steer-turn (<Action.LEFT: 4>, 3) wp +2 steer yaw=-12 n=41
+[9] node 719 hops 24 follow (<Action.FORWARD: 1>, 1) wp +2 p=1.00 best=1.00
+[10] node 719 hops 24 follow (<Action.FORWARD: 1>, 1) wp +2 p=1.00 best=1.00
+[11] thought it over: at route photo 720 (66 inliers), not 719 (42)
+[11] node 720 hops 23 steer-fwd (<Action.FORWARD: 1>, 2) wp +1 steer yaw=+0 n=50
+[12] node 720 hops 23 steer-fwd (<Action.FORWARD: 1>, 2) wp +1 steer yaw=-0 n=83
+[13] node 721 hops 22 steer-fwd (<Action.FORWARD: 1>, 2) wp +1 steer yaw=+0 n=55
+[14] node 722 hops 21 steer-turn (<Action.RIGHT: 8>, 3) wp +1 steer yaw=+11 n=67
+[15] node 721 hops 22 follow (<Action.FORWARD: 1>, 1) wp +1 p=0.51 best=1.00
+[16] node 722 hops 21 follow (<Action.FORWARD: 1>, 1) wp +7 p=1.00 best=1.00
+[17] node 723 hops 20 follow (<Action.LEFT: 4>, 1) wp +7 p=1.00 best=1.00
+[18] node 723 hops 20 follow (<Action.FORWARD: 1>, 1) wp +7 p=1.00 best=1.00
+[19] node 723 hops 20 follow (<Action.FORWARD: 1>, 1) wp +7 p=1.00 best=1.00
+[20] node 723 hops 20 follow (<Action.FORWARD: 1>, 1) wp +7 p=1.00 best=1.00
+[21] node 723 hops 20 follow (<Action.FORWARD: 1>, 1) wp +7 p=1.00 best=1.00
+[22] node 723 hops 20 follow (<Action.FORWARD: 1>, 1) wp +7 p=1.00 best=1.00
+[23] node 723 hops 20 follow (<Action.RIGHT: 8>, 1) wp +7 p=1.00 best=1.00
+[24] node 723 hops 20 follow (<Action.RIGHT: 8>, 1) wp +7 p=1.00 best=1.00
+[25] node 723 hops 20 follow (<Action.RIGHT: 8>, 1) wp +7 p=1.00 best=1.00
+[26] thought it over: at route photo 724 (97 inliers), not 723 (83)
+[26] node 724 hops 19 steer-fwd (<Action.FORWARD: 1>, 2) wp +7 steer yaw=+3 n=51
+[27] node 724 hops 19 steer-fwd (<Action.FORWARD: 1>, 2) wp +7 steer yaw=+3 n=60
+[28] node 724 hops 19 steer-fwd (<Action.FORWARD: 1>, 2) wp +7 steer yaw=+2 n=59
+[29] thought it over: at route photo 725 (72 inliers), not 724 (51)
+[29] node 725 hops 18 steer-turn (<Action.LEFT: 4>, 4) wp +7 steer yaw=-13 n=75
+[30] node 725 hops 18 steer-fwd (<Action.FORWARD: 1>, 2) wp +7 steer yaw=-0 n=74
+[31] node 725 hops 18 steer-turn (<Action.RIGHT: 8>, 6) wp +7 steer yaw=+24 n=67
+[32] thought it over: at route photo 730 (70 inliers), not 725 (43)
+[32] node 730 hops 13 steer-turn (<Action.RIGHT: 8>, 5) wp +4 steer yaw=+17 n=52
+[33] node 730 hops 13 follow (<Action.FORWARD: 1>, 1) wp +4 p=1.00 best=1.00
+[34] node 730 hops 13 follow (<Action.LEFT: 4>, 1) wp +4 p=0.94 best=1.00
+[35] thought it over: at route photo 731 (58 inliers), not 730 (44)
+[35] node 731 hops 12 follow (<Action.LEFT: 4>, 1) wp +3 p=1.00 best=1.00
+[36] node 731 hops 12 follow (<Action.LEFT: 4>, 1) wp +3 p=1.00 best=1.00
+[37] node 731 hops 12 follow (<Action.FORWARD: 1>, 1) wp +3 p=1.00 best=1.00
+[38] node 731 hops 12 follow (<Action.FORWARD: 1>, 1) wp +3 p=1.00 best=1.00
+[39] node 731 hops 12 follow (<Action.FORWARD: 1>, 1) wp +3 p=1.00 best=1.00
+[40] node 731 hops 12 follow (<Action.FORWARD: 1>, 1) wp +1 p=0.00 best=1.00
+[41] node 731 hops 12 follow (<Action.LEFT: 4>, 1) wp +1 p=0.00 best=1.00
+[42] node 731 hops 12 follow (<Action.FORWARD: 1>, 1) wp +3 p=1.00 best=1.00
+[43] node 731 hops 12 follow (<Action.FORWARD: 1>, 1) wp +1 p=0.00 best=1.00
+[44] node 731 hops 12 follow (<Action.FORWARD: 1>, 1) wp +3 p=1.00 best=1.00
+[45] node 731 hops 12 steer-turn (<Action.LEFT: 4>, 6) wp +3 steer yaw=-26 n=46
+[46] node 734 hops 9 steer-turn (<Action.LEFT: 4>, 4) wp +1 steer yaw=-14 n=43
+[47] node 735 hops 8 follow (<Action.FORWARD: 1>, 1) wp +1 p=0.00 best=1.00
+[48] node 735 hops 8 follow (<Action.FORWARD: 1>, 1) wp +1 p=0.00 best=1.00
+[49] node 735 hops 8 follow (<Action.FORWARD: 1>, 1) wp +1 p=0.43 best=1.00
+[50] node 735 hops 8 steer-fwd (<Action.FORWARD: 1>, 2) wp +1 steer yaw=-9 n=46
+[51] node 735 hops 8 steer-fwd (<Action.FORWARD: 1>, 2) wp +2 steer yaw=-2 n=45
+[52] node 736 hops 7 steer-turn (<Action.LEFT: 4>, 4) wp +2 steer yaw=-15 n=48
+[53] node 736 hops 7 steer-turn (<Action.LEFT: 4>, 6) wp +3 steer yaw=-25 n=34 (hold)
+[54] node 2203 hops 6 steer-turn (<Action.LEFT: 4>, 3) wp +3 steer yaw=-11 n=50
+[55] node 2205 hops 4 steer-turn (<Action.LEFT: 4>, 5) wp +1 steer yaw=-16 n=64
+[56] node 2205 hops 4 steer-fwd (<Action.FORWARD: 1>, 2) wp +1 steer yaw=+5 n=44
+[57] node 2205 hops 4 steer-fwd (<Action.FORWARD: 1>, 2) wp +1 steer yaw=-2 n=58
+[58] node 2205 hops 4 steer-fwd (<Action.FORWARD: 1>, 2) wp +1 steer yaw=+0 n=90
+[59] node 2205 hops 4 steer-turn (<Action.LEFT: 4>, 6) wp +2 steer yaw=-23 n=71
+[60] node 2207 hops 2 follow (<Action.FORWARD: 1>, 1) wp +1 p=1.00 best=1.00
+[61] node 2207 hops 2 follow (<Action.FORWARD: 1>, 1) wp +2 p=1.00 best=1.00
+[62] node 2207 hops 2 follow (<Action.FORWARD: 1>, 1) wp +2 p=1.00 best=1.00
+[63] node 2208 hops 1 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=22 left=-103.9 scale=0.79
+[64] node 742 hops 1 goal-scan (<Action.LEFT: 4>, 3) scan 3/105 goal inliers F/L/B/R=0/10/10/11
+[65] node 742 hops 1 goal-scan (<Action.LEFT: 4>, 3) scan 6/105 goal inliers F/L/B/R=16/0/0/0
+[66] node 742 hops 1 goal-scan (<Action.LEFT: 4>, 3) scan 9/105 goal inliers F/L/B/R=14/0/0/0
+[67] node 2212 hops 2 goal-scan (<Action.LEFT: 4>, 3) scan 12/105 goal inliers F/L/B/R=8/12/0/14
+[68] node 2212 hops 2 goal-scan (<Action.LEFT: 4>, 3) scan 15/105 goal inliers F/L/B/R=0/14/8/12
+[69] node 2212 hops 2 goal-scan (<Action.LEFT: 4>, 3) scan 18/105 goal inliers F/L/B/R=8/13/9/0
+[70] node 2212 hops 2 goal-scan (<Action.LEFT: 4>, 3) scan 21/105 goal inliers F/L/B/R=10/12/0/0
+[71] node 2214 hops 4 goal-scan (<Action.LEFT: 4>, 3) scan 24/105 goal inliers F/L/B/R=8/14/15/0
+[72] node 2215 hops 5 goal-scan (<Action.LEFT: 4>, 3) scan 27/105 goal inliers F/L/B/R=0/17/9/0
+[73] node 2215 hops 5 goal-scan (<Action.LEFT: 4>, 3) scan 30/105 goal inliers F/L/B/R=9/0/6/7
+[74] node 2215 hops 5 goal-scan (<Action.LEFT: 4>, 3) scan 33/105 goal inliers F/L/B/R=18/0/9/14
+[75] node 2215 hops 5 approach-turn (<Action.LEFT: 4>, 3) approach view0 n=28 left=-25.7 scale=0.63
+[76] node 2215 hops 5 approach-turn (<Action.RIGHT: 8>, 3) approach view0 n=19 left=+22.3 scale=0.52
+[77] node 2215 hops 5 approach-turn (<Action.RIGHT: 8>, 3) approach view0 n=21 left=+13.4 scale=0.63
+[78] node 2215 hops 5 approach-turn (<Action.LEFT: 4>, 3) approach view0 n=19 left=-24.6 scale=0.65
+[79] node 2215 hops 5 approach-turn (<Action.LEFT: 4>, 3) approach view0 n=26 left=-32.2 scale=0.67
+[80] node 2215 hops 5 approach-turn (<Action.RIGHT: 8>, 3) approach view0 n=19 left=+17.8 scale=0.56
+[81] node 2215 hops 5 approach-turn (<Action.RIGHT: 8>, 3) approach view0 n=27 left=+10.9 scale=0.62
+[82] node 2215 hops 5 approach-fwd (<Action.FORWARD: 1>, 3) approach view0 n=17 left=+2.5 scale=0.64
+[83] node 2215 hops 5 approach-reacquire (<Action.LEFT: 4>, 1) approach view0 n=17 left=+2.5 scale=0.64
+[84] node 2215 hops 5 approach-reacquire (<Action.RIGHT: 8>, 2) approach view0 n=17 left=+2.5 scale=0.64
+[85] node 2215 hops 5 approach-reacquire (<Action.LEFT: 4>, 3) approach view0 n=17 left=+2.5 scale=0.64
+[86] node 2215 hops 5 approach-reacquire (<Action.RIGHT: 8>, 4) approach view0 n=17 left=+2.5 scale=0.64
+[87] node 2215 hops 5 approach-reacquire (<Action.LEFT: 4>, 5) approach view0 n=17 left=+2.5 scale=0.64
+[88] node 2215 hops 5 approach-reacquire (<Action.RIGHT: 8>, 6) approach view0 n=17 left=+2.5 scale=0.64
+[89] node 2215 hops 5 reverse (<Action.RIGHT: 8>, 2) reverse 2215->2214: undo LEFT
+[90] node 2215 hops 5 reverse (<Action.RIGHT: 8>, 2) reverse 2215->2214: undo LEFT
+[91] node 2215 hops 5 reverse (<Action.RIGHT: 8>, 2) reverse 2215->2214: undo LEFT
+[92] node 2215 hops 5 reverse (<Action.RIGHT: 8>, 2) reverse 2215->2214: undo LEFT
+[93] node 2215 hops 5 reverse (<Action.RIGHT: 8>, 2) reverse 2215->2214: undo LEFT
+[94] node 2215 hops 5 reverse (<Action.RIGHT: 8>, 2) reverse 2215->2214: undo LEFT
+[95] node 2215 hops 5 reverse (<Action.RIGHT: 8>, 2) reverse 2215->2214: undo LEFT
+[96] node 2215 hops 5 reverse (<Action.RIGHT: 8>, 2) reverse 2215->2214: undo LEFT
+[97] node 2215 hops 5 reverse (<Action.RIGHT: 8>, 2) reverse 2215->2214: undo LEFT
+[98] node 2215 hops 5 reverse (<Action.RIGHT: 8>, 2) reverse 2215->2214: undo LEFT
+[99] node 2215 hops 5 reverse (<Action.RIGHT: 8>, 2) reverse 2215->2214: undo LEFT
+[100] node 2215 hops 5 reverse (<Action.RIGHT: 8>, 2) reverse 2215->2214: undo LEFT
+[101] node 2213 hops 3 reverse (<Action.RIGHT: 8>, 2) reverse 2213->2212: undo LEFT
+[102] node 2213 hops 3 reverse (<Action.RIGHT: 8>, 2) reverse 2213->2212: undo LEFT
+[103] node 2213 hops 3 reverse (<Action.RIGHT: 8>, 2) reverse 2213->2212: undo LEFT
+[104] node 742 hops 1 goal-scan (<Action.LEFT: 4>, 3) scan 3/105 goal inliers F/L/B/R=7/8/11/0
+[105] node 742 hops 1 goal-scan (<Action.LEFT: 4>, 3) scan 6/105 goal inliers F/L/B/R=13/0/11/12
+[106] node 745 hops 2 goal-scan (<Action.LEFT: 4>, 3) scan 9/105 goal inliers F/L/B/R=10/0/0/14
+[107] node 2223 hops 4 goal-scan (<Action.LEFT: 4>, 3) scan 12/105 goal inliers F/L/B/R=0/0/8/19
+[108] node 2223 hops 4 goal-scan (<Action.LEFT: 4>, 3) scan 15/105 goal inliers F/L/B/R=0/14/0/12
+[109] node 2223 hops 4 goal-scan (<Action.LEFT: 4>, 3) scan 18/105 goal inliers F/L/B/R=7/11/0/12
+[110] node 2223 hops 4 goal-scan (<Action.LEFT: 4>, 3) scan 21/105 goal inliers F/L/B/R=0/0/0/7
+[111] node 2223 hops 4 goal-scan (<Action.LEFT: 4>, 3) scan 24/105 goal inliers F/L/B/R=0/0/0/8
+[112] node 2223 hops 4 goal-scan (<Action.LEFT: 4>, 3) scan 27/105 goal inliers F/L/B/R=6/0/0/7
+[113] node 2223 hops 4 goal-scan (<Action.LEFT: 4>, 3) scan 30/105 goal inliers F/L/B/R=0/0/0/18
+[114] node 2223 hops 4 approach-side3-turn (<Action.RIGHT: 8>, 3) approach view3 n=21 left=-76.3 scale=2.82
+[115] node 2223 hops 4 follow (<Action.FORWARD: 1>, 1) wp +1 p=0.00 best=1.00
+[116] node 2223 hops 4 follow (<Action.FORWARD: 1>, 1) wp +1 p=0.00 best=1.00
+[117] node 2223 hops 4 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.26
+[118] node 2223 hops 4 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (3/105 ticks) p=0.00
+[119] node 2223 hops 4 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (6/105 ticks) p=0.00
+[120] node 2223 hops 4 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (9/105 ticks) p=0.00
+[121] node 2223 hops 4 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (12/105 ticks) p=0.00
+[122] node 2223 hops 4 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (15/105 ticks) p=0.00
+[123] node 2223 hops 4 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (18/105 ticks) p=0.00
+[124] node 2223 hops 4 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (21/105 ticks) p=0.00
+[125] node 2223 hops 4 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (24/105 ticks) p=0.00
+[126] node 2223 hops 4 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (27/105 ticks) p=0.00
+[127] node 2223 hops 4 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.31 best=1.00
+[128] node 2223 hops 4 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.07 best=1.00
+[129] node 2223 hops 4 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.45 best=1.00
+[130] node 2223 hops 4 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.41 best=1.00
+[131] node 2223 hops 4 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.69 best=1.00
+[132] node 2223 hops 4 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.51 best=1.00
+[133] node 2224 hops 5 reverse (<Action.LEFT: 4>, 2) reverse 2224->2223: undo RIGHT
+[134] node 2223 hops 4 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.65 best=1.00
+[135] node 2223 hops 4 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.43 best=1.00
+[136] node 2223 hops 4 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.77 best=1.00
+[137] node 2223 hops 4 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.44 best=1.00
+[138] node 2223 hops 4 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.48 best=1.00
+[139] node 2223 hops 4 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.45 best=1.00
+[140] node 2223 hops 4 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.38 best=1.00
+[141] node 748 hops 5 reverse (<Action.BACKWARD: 2>, 2) reverse 748->747: undo FORWARD
+[142] node 2229 hops 9 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.51 best=1.00
+[143] node 752 hops 9 reverse (<Action.BACKWARD: 2>, 2) reverse 752->751: undo FORWARD
+[144] node 752 hops 9 reverse (<Action.BACKWARD: 2>, 2) reverse 752->751: undo FORWARD
+[145] node 752 hops 9 reverse (<Action.BACKWARD: 2>, 2) reverse 752->751: undo FORWARD
+[146] node 752 hops 9 reverse (<Action.BACKWARD: 2>, 2) reverse 752->751: undo FORWARD
+[147] node 752 hops 9 reverse (<Action.BACKWARD: 2>, 2) reverse 752->751: undo FORWARD
+[148] node 752 hops 9 reverse (<Action.BACKWARD: 2>, 2) reverse 752->751: undo FORWARD
+[149] node 752 hops 9 reverse (<Action.BACKWARD: 2>, 2) reverse 752->751: undo FORWARD
+[150] node 752 hops 9 reverse (<Action.BACKWARD: 2>, 2) reverse 752->751: undo FORWARD
+[151] node 752 hops 9 reverse (<Action.BACKWARD: 2>, 2) reverse 752->751: undo FORWARD
+[152] node 752 hops 9 reverse (<Action.BACKWARD: 2>, 2) reverse 752->751: undo FORWARD
+[153] node 752 hops 9 reverse (<Action.BACKWARD: 2>, 2) reverse 752->751: undo FORWARD
+[154] node 752 hops 9 reverse (<Action.BACKWARD: 2>, 2) reverse 752->751: undo FORWARD
+[155] jump 752 -> 2195: inliers old 10 new 48 -> accepted
+[155] node 2195 hops 14 follow (<Action.FORWARD: 1>, 1) wp +1 p=0.00 best=1.00
+[156] node 2196 hops 13 steer-turn (<Action.RIGHT: 8>, 5) wp +1 steer yaw=+17 n=41
+[157] node 2196 hops 13 steer-fwd (<Action.FORWARD: 1>, 2) wp +1 steer yaw=+2 n=45
+[158] node 2196 hops 13 follow (<Action.FORWARD: 1>, 1) wp +1 p=0.39 best=1.00
+[159] node 2196 hops 13 follow (<Action.FORWARD: 1>, 1) wp +1 p=0.00 best=1.00
+[160] node 2200 hops 9 steer-turn (<Action.RIGHT: 8>, 5) wp +5 steer yaw=+17 n=83
+[161] node 739 hops 4 follow (<Action.LEFT: 4>, 1) wp +1 p=0.00 best=1.00
+[162] node 739 hops 4 follow (<Action.LEFT: 4>, 1) wp +1 p=0.43 best=1.00
+[163] node 739 hops 4 follow (<Action.FORWARD: 1>, 1) wp +1 p=0.00 best=1.00
+[164] node 739 hops 4 follow (<Action.FORWARD: 1>, 1) wp +1 p=1.00 best=1.00
+[165] node 739 hops 4 follow (<Action.FORWARD: 1>, 1) wp +2 p=1.00 best=1.00
+[166] node 739 hops 4 follow (<Action.LEFT: 4>, 1) wp +2 p=0.96 best=1.00
+[167] node 740 hops 3 follow (<Action.FORWARD: 1>, 1) wp +2 p=1.00 best=1.00
+[168] node 740 hops 3 follow (<Action.FORWARD: 1>, 1) wp +3 p=0.91 best=1.00
+[169] node 740 hops 3 approach-side3-turn (<Action.RIGHT: 8>, 3) approach view3 n=20 left=-70.9 scale=0.71
+[170] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=28 left=-142.5 scale=0.78
+[171] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=24 left=-125.4 scale=0.68
+[172] node 740 hops 3 approach-side1-back (<Action.BACKWARD: 2>, 2) approach view1 n=20 left=+88.7 scale=1.26
+[173] node 740 hops 3 approach-back (<Action.BACKWARD: 2>, 2) approach view0 n=23 left=-2.8 scale=1.66
+[174] node 740 hops 3 approach-turn (<Action.RIGHT: 8>, 3) approach view0 n=18 left=+41.0 scale=1.38
+[175] node 740 hops 3 approach-turn (<Action.RIGHT: 8>, 3) approach view0 n=17 left=+46.5 scale=1.30
+[176] node 739 hops 4 approach-search (<Action.RIGHT: 8>, 1) approach view0 n=17 left=+46.5 scale=1.30
+[177] node 739 hops 4 approach-search (<Action.RIGHT: 8>, 1) approach view0 n=17 left=+46.5 scale=1.30
+[178] node 739 hops 4 approach-search (<Action.RIGHT: 8>, 1) approach view0 n=17 left=+46.5 scale=1.30
+[179] node 739 hops 4 approach-side3-turn (<Action.RIGHT: 8>, 3) approach view3 n=22 left=-71.3 scale=1.53
+[180] node 739 hops 4 approach-side3-turn (<Action.RIGHT: 8>, 3) approach view3 n=22 left=-71.8 scale=1.70
+[181] node 739 hops 4 approach-side1-fwd (<Action.FORWARD: 1>, 2) approach view1 n=20 left=+91.4 scale=0.78
+[182] node 739 hops 4 follow (<Action.FORWARD: 1>, 1) wp +4 p=0.86 best=1.00
+[183] node 738 hops 5 follow (<Action.LEFT: 4>, 1) wp +5 p=0.85 best=1.00
+[184] node 738 hops 5 follow (<Action.LEFT: 4>, 1) wp +2 p=0.91 best=1.00
+[185] node 738 hops 5 follow (<Action.LEFT: 4>, 1) wp +2 p=0.93 best=1.00
+[186] node 738 hops 5 follow (<Action.LEFT: 4>, 1) wp +2 p=1.00 best=1.00
+[187] node 738 hops 5 follow (<Action.LEFT: 4>, 1) wp +2 p=1.00 best=1.00
+[188] node 738 hops 5 follow (<Action.LEFT: 4>, 1) wp +2 p=1.00 best=1.00
+[189] node 738 hops 5 follow (<Action.LEFT: 4>, 1) wp +2 p=1.00 best=1.00
+[190] node 738 hops 5 steer-turn (<Action.LEFT: 4>, 4) wp +2 steer yaw=-15 n=45
+[191] node 738 hops 5 steer-fwd (<Action.FORWARD: 1>, 2) wp +2 steer yaw=-4 n=80
+[192] node 740 hops 3 approach-side1-turn (<Action.RIGHT: 8>, 3) approach view1 n=23 left=+103.2 scale=1.16
+[193] node 740 hops 3 approach-side3-rotate (<Action.LEFT: 4>, 26) approach view3 n=27 left=-83.7 scale=1.00
+[194] node 740 hops 3 approach-side1-rotate (<Action.RIGHT: 8>, 26) approach view1 n=28 left=+94.3 scale=1.09
+[195] node 740 hops 3 approach-side3-rotate (<Action.LEFT: 4>, 26) approach view3 n=27 left=-94.6 scale=0.96
+[196] node 740 hops 3 approach-side1-back (<Action.BACKWARD: 2>, 2) approach view1 n=24 left=+90.4 scale=1.14
+[197] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=29 left=+173.7 scale=1.36
+[198] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=24 left=+183.1 scale=1.31
+[199] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=28 left=+174.2 scale=1.54
+[200] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=22 left=+180.9 scale=1.64
+[201] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=23 left=+175.6 scale=1.61
+[202] node 740 hops 3 stuck (<Action.FORWARD: 1>, 4) approach view2 n=23 left=+175.6 scale=1.61
+[203] node 740 hops 3 recover (<Action.RIGHT: 8>, 11) approach view2 n=23 left=+175.6 scale=1.61
+[204] node 740 hops 3 follow (<Action.LEFT: 4>, 1) wp +1 p=0.00 best=1.00
+[205] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=23 left=+161.5 scale=1.27
+[206] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=25 left=+178.4 scale=1.67
+[207] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=30 left=+165.0 scale=1.29
+[208] jump 740 -> 27: inliers old 48 new 28 -> rejected
+[208] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=32 left=+174.6 scale=1.24
+[209] jump 740 -> 27: inliers old 44 new 30 -> rejected
+[209] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=28 left=+168.2 scale=1.38
+[210] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=24 left=+176.1 scale=1.53
+[211] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=22 left=+195.3 scale=1.41
+[212] node 740 hops 3 follow (<Action.FORWARD: 1>, 1) wp +1 p=0.00 best=1.00
+[213] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=24 left=+180.1 scale=1.45
+[214] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+169.9 scale=1.58
+[215] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=24 left=+190.3 scale=1.36
+[216] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=25 left=+175.3 scale=1.39
+[217] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=21 left=+267.8 scale=1.69
+[218] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=21 left=+199.1 scale=1.42
+[219] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=26 left=+175.5 scale=1.43
+[220] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=22 left=+167.6 scale=1.53
+[221] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=24 left=+174.3 scale=1.72
+[222] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=23 left=+161.5 scale=1.61
+[223] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=22 left=+170.9 scale=1.77
+[224] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=23 left=+195.2 scale=1.47
+[225] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=28 left=+177.8 scale=1.35
+[226] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[227] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=23 left=+166.5 scale=1.59
+[228] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=20 left=+175.4 scale=1.38
+[229] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=20 left=+174.9 scale=1.48
+[230] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=20 left=+172.3 scale=1.63
+[231] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=23 left=+176.4 scale=1.46
+[232] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=23 left=+169.9 scale=1.62
+[233] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (3/105 ticks) p=0.00
+[234] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=27 left=+179.0 scale=1.38
+[235] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=23 left=+178.1 scale=1.56
+[236] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+169.3 scale=1.44
+[237] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (6/105 ticks) p=0.00
+[238] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=22 left=+269.8 scale=1.41
+[239] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=26 left=+181.1 scale=1.37
+[240] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=22 left=+273.9 scale=1.61
+[241] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=24 left=+167.5 scale=1.57
+[242] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=23 left=-134.6 scale=1.20
+[243] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=27 left=-150.4 scale=1.27
+[244] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=26 left=-95.3 scale=1.38
+[245] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+170.8 scale=1.73
+[246] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (9/105 ticks) p=0.00
+[247] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=23 left=+174.2 scale=1.41
+[248] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=22 left=+162.4 scale=1.68
+[249] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (12/105 ticks) p=0.00
+[250] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=27 left=+183.0 scale=1.39
+[251] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+170.9 scale=1.60
+[252] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=21 left=+179.2 scale=1.35
+[253] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (15/105 ticks) p=0.00
+[254] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=26 left=+170.1 scale=1.51
+[255] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=25 left=-120.8 scale=1.14
+[256] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=24 left=+179.3 scale=1.49
+[257] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=22 left=+178.9 scale=1.50
+[258] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=21 left=+186.0 scale=1.53
+[259] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+166.3 scale=1.66
+[260] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=22 left=+207.2 scale=1.71
+[261] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=25 left=+175.2 scale=1.43
+[262] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=22 left=+164.6 scale=1.68
+[263] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (18/105 ticks) p=0.00
+[264] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=24 left=+193.6 scale=1.34
+[265] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=27 left=+174.0 scale=1.36
+[266] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=23 left=+163.6 scale=1.53
+[267] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (21/105 ticks) p=0.00
+[268] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=26 left=+183.7 scale=1.45
+[269] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=22 left=+169.4 scale=1.65
+[270] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=22 left=+268.3 scale=1.35
+[271] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=27 left=+170.5 scale=1.45
+[272] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=26 left=+189.3 scale=1.41
+[273] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=25 left=+182.7 scale=1.33
+[274] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=20 left=+159.2 scale=1.73
+[275] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=22 left=+174.9 scale=1.43
+[276] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+161.2 scale=1.70
+[277] jump 740 -> 295: inliers old 9 new 14 -> rejected
+[277] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=20 left=+178.1 scale=1.41
+[278] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=20 left=+172.1 scale=1.74
+[279] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (24/105 ticks) p=0.00
+[280] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=21 left=+185.8 scale=1.48
+[281] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=20 left=+167.2 scale=1.61
+[282] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=23 left=+194.6 scale=1.29
+[283] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=23 left=+180.0 scale=1.38
+[284] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (27/105 ticks) p=0.00
+[285] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=22 left=+186.7 scale=1.39
+[286] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=20 left=+267.5 scale=1.70
+[287] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 2) approach view2 n=23 left=+171.6 scale=1.40
+[288] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=22 left=+178.9 scale=1.32
+[289] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=20 left=+162.8 scale=1.61
+[290] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=20 left=+259.6 scale=1.33
+[291] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=23 left=+186.9 scale=1.41
+[292] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (30/105 ticks) p=0.00
+[293] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=23 left=+186.8 scale=1.44
+[294] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+150.3 scale=1.59
+[295] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=21 left=+176.7 scale=1.45
+[296] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=20 left=+176.1 scale=1.60
+[297] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=20 left=+171.0 scale=1.65
+[298] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=21 left=+178.0 scale=1.48
+[299] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=21 left=+174.3 scale=1.67
+[300] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (33/105 ticks) p=0.00
+[301] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=21 left=+193.6 scale=1.51
+[302] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=26 left=+175.1 scale=1.41
+[303] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (36/105 ticks) p=0.00
+[304] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=24 left=+164.9 scale=1.62
+[305] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=24 left=-86.5 scale=1.25
+[306] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=20 left=+161.4 scale=1.67
+[307] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=21 left=+200.5 scale=1.54
+[308] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=27 left=+185.9 scale=1.42
+[309] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+159.9 scale=1.75
+[310] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=23 left=+254.2 scale=1.30
+[311] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=26 left=+172.4 scale=1.46
+[312] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=23 left=+162.1 scale=1.70
+[313] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+168.1 scale=1.35
+[314] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=20 left=+170.1 scale=1.48
+[315] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=29 left=-153.8 scale=1.40
+[316] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (39/105 ticks) p=0.00
+[317] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=21 left=+190.6 scale=1.46
+[318] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=24 left=+203.2 scale=1.13
+[319] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=27 left=+179.9 scale=1.26
+[320] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+170.4 scale=1.48
+[321] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=25 left=+182.8 scale=1.36
+[322] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=23 left=+160.4 scale=1.55
+[323] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=24 left=-151.0 scale=1.26
+[324] jump 740 -> 646: inliers old 14 new 16 -> rejected
+[324] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=22 left=+186.0 scale=1.51
+[325] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (42/105 ticks) p=0.00
+[326] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (45/105 ticks) p=0.00
+[327] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=24 left=+170.2 scale=1.41
+[328] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=23 left=+187.7 scale=1.47
+[329] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=23 left=+168.3 scale=1.60
+[330] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=25 left=+177.3 scale=1.43
+[331] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+163.0 scale=1.46
+[332] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=20 left=+178.7 scale=1.45
+[333] jump 740 -> 1003: inliers old 19 new 20 -> rejected
+[333] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=20 left=+164.1 scale=1.52
+[334] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=22 left=+176.0 scale=1.32
+[335] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=20 left=+166.9 scale=1.69
+[336] jump 740 -> 646: inliers old 12 new 16 -> rejected
+[336] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=23 left=-138.2 scale=1.15
+[337] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=23 left=+178.9 scale=1.42
+[338] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+166.9 scale=1.58
+[339] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=24 left=+179.6 scale=1.41
+[340] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=20 left=+168.3 scale=1.50
+[341] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=22 left=-121.2 scale=1.34
+[342] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=24 left=+179.4 scale=1.39
+[343] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (48/105 ticks) p=0.00
+[344] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=26 left=+195.3 scale=1.52
+[345] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=29 left=+189.7 scale=1.37
+[346] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=24 left=+191.9 scale=1.21
+[347] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=24 left=+256.5 scale=1.24
+[348] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=31 left=+176.5 scale=1.25
+[349] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=21 left=+173.1 scale=1.77
+[350] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+161.8 scale=1.60
+[351] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=28 left=-155.5 scale=1.17
+[352] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (51/105 ticks) p=0.00
+[353] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=20 left=+264.2 scale=1.39
+[354] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=24 left=+179.5 scale=1.20
+[355] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (54/105 ticks) p=0.00
+[356] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=24 left=+183.5 scale=1.43
+[357] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (57/105 ticks) p=0.00
+[358] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=25 left=+173.6 scale=1.47
+[359] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+157.8 scale=1.72
+[360] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=21 left=-102.4 scale=1.35
+[361] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=23 left=-91.9 scale=1.30
+[362] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (60/105 ticks) p=0.00
+[363] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=20 left=+174.4 scale=1.46
+[364] jump 740 -> 900: inliers old 21 new 18 -> rejected
+[364] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=20 left=+165.5 scale=1.66
+[365] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (63/105 ticks) p=0.00
+[366] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=26 left=+178.8 scale=1.42
+[367] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=21 left=+183.1 scale=1.63
+[368] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=23 left=+163.2 scale=1.57
+[369] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=21 left=+178.3 scale=1.44
+[370] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=23 left=+172.2 scale=1.65
+[371] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=20 left=+167.2 scale=1.62
+[372] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=22 left=+174.2 scale=1.43
+[373] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=22 left=+168.2 scale=1.58
+[374] jump 740 -> 1003: inliers old 17 new 24 -> rejected
+[374] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=21 left=+186.0 scale=1.47
+[375] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (66/105 ticks) p=0.00
+[376] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=22 left=+169.6 scale=1.56
+[377] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=23 left=-167.1 scale=1.29
+[378] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=25 left=-117.6 scale=1.44
+[379] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=27 left=-130.7 scale=1.44
+[380] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (69/105 ticks) p=0.00
+[381] jump 740 -> 1003: inliers old 15 new 31 -> rejected
+[381] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=24 left=+184.6 scale=1.52
+[382] jump 740 -> 1003: inliers old 7 new 19 -> rejected
+[382] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (72/105 ticks) p=0.00
+[383] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=24 left=+194.8 scale=1.43
+[384] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=24 left=+172.2 scale=1.41
+[385] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (75/105 ticks) p=0.00
+[386] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=20 left=+180.9 scale=1.52
+[387] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (78/105 ticks) p=0.00
+[388] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=25 left=+176.9 scale=1.39
+[389] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (81/105 ticks) p=0.00
+[390] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=21 left=+261.1 scale=1.57
+[391] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=26 left=+170.5 scale=1.39
+[392] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=25 left=+193.6 scale=1.49
+[393] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=27 left=+174.3 scale=1.40
+[394] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+166.8 scale=1.57
+[395] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (84/105 ticks) p=0.00
+[396] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+161.8 scale=1.53
+[397] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=24 left=+182.0 scale=1.42
+[398] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (87/105 ticks) p=0.00
+[399] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=20 left=+166.5 scale=1.45
+[400] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=24 left=+208.4 scale=1.41
+[401] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=24 left=+188.9 scale=1.31
+[402] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=27 left=+190.1 scale=1.18
+[403] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=26 left=+170.9 scale=1.30
+[404] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=24 left=+170.7 scale=1.62
+[405] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=28 left=-99.6 scale=1.48
+[406] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (90/105 ticks) p=0.00
+[407] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=25 left=+185.8 scale=1.38
+[408] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=22 left=+180.2 scale=1.51
+[409] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=21 left=+177.3 scale=1.72
+[410] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (93/105 ticks) p=0.00
+[411] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=22 left=+174.9 scale=1.49
+[412] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (96/105 ticks) p=0.00
+[413] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=22 left=+181.6 scale=1.42
+[414] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=20 left=+165.6 scale=1.57
+[415] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=21 left=+231.2 scale=1.31
+[416] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=23 left=+174.4 scale=1.43
+[417] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=21 left=+202.1 scale=1.71
+[418] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=25 left=+173.0 scale=1.51
+[419] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (99/105 ticks) p=0.00
+[420] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=25 left=+184.8 scale=1.38
+[421] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=21 left=+273.0 scale=1.71
+[422] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=23 left=+174.6 scale=1.55
+[423] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+157.1 scale=1.77
+[424] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=20 left=+180.5 scale=1.37
+[425] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=22 left=+157.1 scale=1.72
+[426] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=23 left=+203.2 scale=1.37
+[427] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=25 left=+175.0 scale=1.37
+[428] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=23 left=+156.8 scale=1.69
+[429] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=22 left=+268.7 scale=1.43
+[430] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=23 left=+176.4 scale=1.37
+[431] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=24 left=+177.1 scale=1.64
+[432] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (102/105 ticks) p=0.00
+[433] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=26 left=+164.2 scale=1.58
+[434] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=23 left=-104.0 scale=1.23
+[435] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=26 left=-93.5 scale=1.36
+[436] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=20 left=+160.3 scale=1.65
+[437] node 740 hops 3 wp-search (<Action.RIGHT: 8>, 3) look for wp +1 (105/105 ticks) p=0.00
+[438] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=23 left=+175.6 scale=1.39
+[439] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=24 left=+168.5 scale=1.69
+[440] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[441] jump 740 -> 495: inliers old 19 new 17 -> rejected
+[441] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=22 left=+269.7 scale=1.61
+[442] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=27 left=+186.4 scale=1.38
+[443] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=21 left=+182.6 scale=1.70
+[444] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=22 left=+156.2 scale=1.68
+[445] jump 740 -> 295: inliers old 9 new 7 -> rejected
+[445] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=21 left=+179.3 scale=1.39
+[446] jump 740 -> 295: inliers old 22 new 0 -> rejected
+[446] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[447] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=24 left=+173.6 scale=1.64
+[448] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=20 left=+195.1 scale=1.63
+[449] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=23 left=+174.5 scale=1.50
+[450] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=25 left=+169.0 scale=1.62
+[451] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[452] jump 740 -> 495: inliers old 17 new 17 -> rejected
+[452] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=22 left=+154.5 scale=1.66
+[453] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.87
+[454] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[455] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=21 left=+175.5 scale=1.41
+[456] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[457] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=23 left=+165.2 scale=1.61
+[458] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=20 left=+172.1 scale=1.46
+[459] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=22 left=+178.8 scale=1.63
+[460] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=22 left=+165.1 scale=1.66
+[461] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=28 left=+166.7 scale=1.44
+[462] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=22 left=+261.2 scale=1.43
+[463] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=24 left=+270.3 scale=1.35
+[464] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=26 left=+185.2 scale=1.17
+[465] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[466] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.91
+[467] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=20 left=+161.3 scale=1.60
+[468] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=21 left=+184.3 scale=1.45
+[469] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=21 left=+175.9 scale=1.59
+[470] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+168.3 scale=1.59
+[471] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=22 left=-140.7 scale=1.23
+[472] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=23 left=+195.9 scale=1.48
+[473] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=23 left=+194.1 scale=1.41
+[474] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=25 left=+267.5 scale=1.33
+[475] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=25 left=+170.4 scale=1.33
+[476] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+163.7 scale=1.54
+[477] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=26 left=-98.9 scale=1.36
+[478] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.83
+[479] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=25 left=-152.0 scale=1.51
+[480] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[481] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.45
+[482] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=22 left=+264.8 scale=1.49
+[483] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[484] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=26 left=+183.8 scale=1.42
+[485] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=22 left=+182.4 scale=1.45
+[486] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=23 left=+169.7 scale=1.57
+[487] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[488] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[489] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=20 left=+167.0 scale=1.46
+[490] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=20 left=+205.7 scale=1.39
+[491] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[492] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=26 left=+177.1 scale=1.52
+[493] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=24 left=+164.6 scale=1.54
+[494] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[495] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=23 left=+199.9 scale=1.44
+[496] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=25 left=+183.0 scale=1.49
+[497] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=22 left=+167.7 scale=1.65
+[498] jump 740 -> 1003: inliers old 16 new 26 -> rejected
+[498] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=20 left=+268.9 scale=1.29
+[499] jump 740 -> 1003: inliers old 24 new 17 -> rejected
+[499] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=25 left=+168.9 scale=1.47
+[500] jump 740 -> 1003: inliers old 17 new 25 -> rejected
+[500] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=25 left=-147.2 scale=1.23
+[501] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=24 left=+175.2 scale=1.44
+[502] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=23 left=+163.6 scale=1.67
+[503] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=22 left=+178.6 scale=1.41
+[504] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=20 left=+191.0 scale=1.60
+[505] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=24 left=+162.4 scale=1.45
+[506] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=23 left=-130.2 scale=1.38
+[507] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=25 left=-163.7 scale=1.39
+[508] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=26 left=-139.9 scale=1.50
+[509] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.83
+[510] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=22 left=-147.0 scale=1.51
+[511] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.85
+[512] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.59
+[513] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=23 left=-137.1 scale=1.56
+[514] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[515] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.64
+[516] node 740 hops 3 approach-side3-turn (<Action.RIGHT: 8>, 2) approach view3 n=25 left=-81.5 scale=1.50
+[517] jump 740 -> 1003: inliers old 15 new 25 -> rejected
+[517] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=21 left=+189.6 scale=1.47
+[518] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=26 left=+181.2 scale=1.46
+[519] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.89
+[520] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=20 left=+270.2 scale=1.56
+[521] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=23 left=+172.7 scale=1.39
+[522] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=22 left=+179.0 scale=1.60
+[523] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=20 left=+184.7 scale=1.46
+[524] node 740 hops 3 stuck (<Action.FORWARD: 1>, 4) approach view2 n=20 left=+184.7 scale=1.46
+[525] node 740 hops 3 recover (<Action.LEFT: 4>, 14) approach view2 n=20 left=+184.7 scale=1.46
+[526] jump 740 -> 651: inliers old 0 new 19 -> rejected
+[526] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[527] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[528] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[529] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[530] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[531] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[532] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[533] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.84
+[534] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[535] jump 740 -> 1002: inliers old 12 new 7 -> rejected
+[535] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[536] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.62
+[537] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.70
+[538] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[539] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[540] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[541] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=28 left=+181.2 scale=1.75
+[542] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=21 left=+269.8 scale=1.75
+[543] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=28 left=+184.6 scale=1.11
+[544] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=25 left=+176.8 scale=1.26
+[545] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=23 left=+193.5 scale=1.21
+[546] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=25 left=+181.9 scale=1.14
+[547] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[548] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[549] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[550] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+161.1 scale=1.45
+[551] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=22 left=-148.8 scale=1.24
+[552] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=27 left=-157.4 scale=1.38
+[553] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.93
+[554] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=27 left=-143.1 scale=1.43
+[555] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.48
+[556] jump 740 -> 1004: inliers old 18 new 16 -> rejected
+[556] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.90
+[557] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=27 left=-155.2 scale=1.38
+[558] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.82
+[559] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.68
+[560] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=23 left=+269.8 scale=1.54
+[561] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[562] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.91
+[563] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=25 left=+196.2 scale=1.13
+[564] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=25 left=+178.2 scale=1.20
+[565] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[566] node 740 hops 3 approach-side3-rotate (<Action.LEFT: 4>, 26) approach view3 n=22 left=-97.3 scale=1.09
+[567] node 740 hops 3 approach-reacquire (<Action.LEFT: 4>, 1) approach view3 n=22 left=-97.3 scale=1.09
+[568] node 740 hops 3 approach-reacquire (<Action.RIGHT: 8>, 2) approach view3 n=22 left=-97.3 scale=1.09
+[569] jump 740 -> 1454: inliers old 0 new 15 -> rejected
+[569] node 740 hops 3 approach-reacquire (<Action.LEFT: 4>, 3) approach view3 n=22 left=-97.3 scale=1.09
+[570] jump 740 -> 1454: inliers old 0 new 15 -> rejected
+[570] node 740 hops 3 approach-reacquire (<Action.RIGHT: 8>, 4) approach view3 n=22 left=-97.3 scale=1.09
+[571] node 740 hops 3 approach-reacquire (<Action.LEFT: 4>, 5) approach view3 n=22 left=-97.3 scale=1.09
+[572] node 740 hops 3 approach-reacquire (<Action.RIGHT: 8>, 6) approach view3 n=22 left=-97.3 scale=1.09
+[573] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[574] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[575] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[576] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[577] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.80
+[578] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.77
+[579] jump 740 -> 1004: inliers old 18 new 17 -> rejected
+[579] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=20 left=-86.4 scale=1.60
+[580] jump 740 -> 1004: inliers old 12 new 20 -> rejected
+[580] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=23 left=+167.0 scale=1.33
+[581] jump 740 -> 1004: inliers old 13 new 17 -> rejected
+[581] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=25 left=-149.0 scale=1.23
+[582] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=26 left=-171.5 scale=1.41
+[583] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.94
+[584] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=25 left=-146.1 scale=1.43
+[585] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.75
+[586] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=24 left=-158.5 scale=1.47
+[587] jump 740 -> 1004: inliers old 18 new 21 -> rejected
+[587] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.58
+[588] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.52
+[589] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[590] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=23 left=-100.6 scale=1.43
+[591] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.58
+[592] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.58
+[593] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[594] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=26 left=-156.5 scale=1.35
+[595] jump 740 -> 1004: inliers old 16 new 19 -> rejected
+[595] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.60
+[596] jump 740 -> 1004: inliers old 19 new 16 -> rejected
+[596] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.56
+[597] jump 740 -> 1004: inliers old 17 new 19 -> rejected
+[597] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=27 left=-149.4 scale=1.54
+[598] jump 740 -> 1004: inliers old 17 new 14 -> rejected
+[598] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[599] jump 740 -> 1004: inliers old 18 new 17 -> rejected
+[599] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.99
+[600] jump 740 -> 1004: inliers old 17 new 22 -> rejected
+[600] node 740 hops 3 approach-side3-turn (<Action.RIGHT: 8>, 3) approach view3 n=20 left=-60.2 scale=1.60
+[601] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=21 left=+178.8 scale=1.42
+[602] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=20 left=-101.3 scale=1.35
+[603] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=24 left=-82.1 scale=1.39
+[604] node 740 hops 3 approach-side3-turn (<Action.RIGHT: 8>, 3) approach view3 n=23 left=-79.3 scale=1.34
+[605] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=21 left=-101.0 scale=1.22
+[606] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=26 left=-104.7 scale=1.29
+[607] jump 740 -> 1004: inliers old 16 new 15 -> rejected
+[607] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=26 left=-158.7 scale=1.45
+[608] jump 740 -> 1004: inliers old 18 new 19 -> rejected
+[608] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.81
+[609] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=26 left=-128.7 scale=1.44
+[610] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.68
+[611] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[612] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=24 left=-87.4 scale=1.36
+[613] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=21 left=-105.8 scale=1.35
+[614] jump 740 -> 1003: inliers old 16 new 18 -> rejected
+[614] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=29 left=-142.7 scale=1.24
+[615] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=29 left=-90.6 scale=1.46
+[616] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[617] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=21 left=+179.8 scale=1.44
+[618] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 2) approach view3 n=20 left=-98.1 scale=1.23
+[619] jump 740 -> 1004: inliers old 21 new 13 -> rejected
+[619] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=22 left=+187.4 scale=1.43
+[620] jump 740 -> 1004: inliers old 10 new 22 -> rejected
+[620] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=22 left=-151.5 scale=1.26
+[621] jump 740 -> 1004: inliers old 13 new 13 -> rejected
+[621] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=24 left=-100.7 scale=1.32
+[622] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=28 left=-90.4 scale=1.44
+[623] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=22 left=-88.7 scale=1.30
+[624] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[625] jump 740 -> 1004: inliers old 10 new 18 -> rejected
+[625] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[626] jump 740 -> 1004: inliers old 7 new 14 -> rejected
+[626] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=20 left=-93.6 scale=1.29
+[627] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[628] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[629] node 740 hops 3 approach-side3-rotate (<Action.LEFT: 4>, 26) approach view3 n=23 left=-95.7 scale=1.08
+[630] node 740 hops 3 approach-turn (<Action.RIGHT: 8>, 3) approach view0 n=14 left=+39.6 scale=0.67
+[631] node 740 hops 3 approach-search (<Action.RIGHT: 8>, 1) approach view0 n=14 left=+39.6 scale=0.67
+[632] node 740 hops 3 approach-search (<Action.RIGHT: 8>, 1) approach view0 n=14 left=+39.6 scale=0.67
+[633] node 740 hops 3 approach-search (<Action.RIGHT: 8>, 1) approach view0 n=14 left=+39.6 scale=0.67
+[634] node 740 hops 3 approach-search (<Action.RIGHT: 8>, 1) approach view0 n=14 left=+39.6 scale=0.67
+[635] node 740 hops 3 approach-search (<Action.RIGHT: 8>, 1) approach view0 n=14 left=+39.6 scale=0.67
+[636] node 740 hops 3 approach-search (<Action.RIGHT: 8>, 1) approach view0 n=14 left=+39.6 scale=0.67
+[637] jump 740 -> 1004: inliers old 18 new 25 -> rejected
+[637] node 740 hops 3 approach-search (<Action.RIGHT: 8>, 1) approach view0 n=14 left=+39.6 scale=0.67
+[638] jump 740 -> 1004: inliers old 15 new 13 -> rejected
+[638] node 740 hops 3 approach-search (<Action.RIGHT: 8>, 1) approach view0 n=14 left=+39.6 scale=0.67
+[639] jump 740 -> 1004: inliers old 16 new 20 -> rejected
+[639] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=24 left=-177.7 scale=1.47
+[640] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.87
+[641] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[642] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[643] jump 740 -> 1004: inliers old 15 new 21 -> rejected
+[643] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=22 left=+203.4 scale=1.56
+[644] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=20 left=+186.7 scale=1.42
+[645] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=23 left=-115.1 scale=1.31
+[646] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=23 left=-147.6 scale=1.27
+[647] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=25 left=-93.9 scale=1.41
+[648] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=23 left=-161.7 scale=1.22
+[649] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=28 left=-148.2 scale=1.42
+[650] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=22 left=-110.1 scale=1.47
+[651] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[652] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=24 left=-161.7 scale=1.48
+[653] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.86
+[654] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.70
+[655] node 740 hops 3 approach-side3-turn (<Action.RIGHT: 8>, 3) approach view3 n=20 left=-62.9 scale=1.52
+[656] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[657] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=22 left=+269.1 scale=1.41
+[658] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=22 left=+180.3 scale=1.17
+[659] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=27 left=-124.7 scale=1.41
+[660] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[661] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=29 left=-152.5 scale=1.35
+[662] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=20 left=-156.0 scale=1.41
+[663] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.94
+[664] node 740 hops 3 approach-side3-turn (<Action.RIGHT: 8>, 3) approach view3 n=25 left=-73.1 scale=1.53
+[665] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 2) approach view3 n=23 left=-98.5 scale=1.36
+[666] jump 740 -> 1004: inliers old 18 new 17 -> rejected
+[666] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=24 left=-94.2 scale=1.32
+[667] jump 740 -> 1004: inliers old 14 new 17 -> rejected
+[667] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=26 left=-144.7 scale=1.36
+[668] jump 740 -> 1004: inliers old 17 new 14 -> rejected
+[668] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=23 left=-149.8 scale=1.31
+[669] jump 740 -> 1004: inliers old 18 new 16 -> rejected
+[669] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=20 left=-157.9 scale=1.51
+[670] jump 740 -> 1004: inliers old 13 new 17 -> rejected
+[670] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.74
+[671] jump 740 -> 1004: inliers old 15 new 15 -> rejected
+[671] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=23 left=-122.2 scale=1.45
+[672] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.67
+[673] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[674] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=27 left=-102.5 scale=1.42
+[675] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.67
+[676] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[677] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=23 left=-91.0 scale=1.47
+[678] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=28 left=-156.6 scale=1.20
+[679] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=25 left=-157.2 scale=1.29
+[680] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[681] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=28 left=-144.2 scale=1.44
+[682] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[683] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=25 left=-154.6 scale=1.51
+[684] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.77
+[685] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[686] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=23 left=+272.6 scale=1.58
+[687] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[688] node 740 hops 3 approach-side2-back (<Action.BACKWARD: 2>, 2) approach view2 n=20 left=+185.1 scale=1.18
+[689] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=24 left=-150.9 scale=1.39
+[690] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=26 left=-177.5 scale=1.37
+[691] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=25 left=-144.6 scale=1.51
+[692] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.94
+[693] jump 740 -> 1004: inliers old 16 new 15 -> rejected
+[693] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=26 left=-89.1 scale=1.46
+[694] jump 740 -> 1004: inliers old 19 new 17 -> rejected
+[694] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=25 left=-123.5 scale=1.31
+[695] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=24 left=-142.3 scale=1.28
+[696] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=22 left=-146.4 scale=1.48
+[697] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.99
+[698] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=21 left=-159.0 scale=1.60
+[699] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.95
+[700] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[701] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=21 left=-157.1 scale=1.41
+[702] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[703] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.95
+[704] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=24 left=-145.6 scale=1.49
+[705] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.96
+[706] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.89
+[707] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[708] jump 740 -> 1004: inliers old 18 new 18 -> rejected
+[708] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=28 left=-145.7 scale=1.30
+[709] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[710] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.91
+[711] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[712] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=25 left=-94.8 scale=1.42
+[713] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=24 left=-93.8 scale=1.30
+[714] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=25 left=-169.3 scale=1.19
+[715] jump 740 -> 1004: inliers old 16 new 16 -> rejected
+[715] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=27 left=-158.6 scale=1.27
+[716] node 740 hops 3 approach-side3-turn (<Action.RIGHT: 8>, 3) approach view3 n=22 left=-73.5 scale=1.45
+[717] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=22 left=+164.1 scale=1.47
+[718] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=23 left=-92.0 scale=1.47
+[719] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=27 left=-143.7 scale=1.23
+[720] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=27 left=-150.3 scale=1.40
+[721] node 740 hops 3 approach-side2-turn (<Action.RIGHT: 8>, 3) approach view2 n=23 left=+200.4 scale=1.57
+[722] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=22 left=-141.8 scale=1.45
+[723] node 740 hops 3 approach-side3-turn (<Action.RIGHT: 8>, 3) approach view3 n=22 left=-41.7 scale=1.54
+[724] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[725] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=22 left=+171.2 scale=1.30
+[726] jump 740 -> 1004: inliers old 16 new 16 -> rejected
+[726] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=23 left=-166.9 scale=1.35
+[727] jump 740 -> 1004: inliers old 19 new 20 -> rejected
+[727] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.93
+[728] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=21 left=-84.6 scale=1.37
+[729] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=24 left=-158.9 scale=1.17
+[730] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=28 left=-151.8 scale=1.29
+[731] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=33 left=-151.7 scale=1.43
+[732] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.94
+[733] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=21 left=-122.4 scale=1.43
+[734] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.99
+[735] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.70
+[736] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=24 left=-87.6 scale=1.55
+[737] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=23 left=-130.9 scale=1.28
+[738] jump 740 -> 1004: inliers old 15 new 16 -> rejected
+[738] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=25 left=-134.4 scale=1.38
+[739] node 740 hops 3 approach-side3-turn (<Action.RIGHT: 8>, 3) approach view3 n=24 left=-76.9 scale=1.41
+[740] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=21 left=-98.8 scale=1.39
+[741] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=25 left=-87.2 scale=1.44
+[742] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=24 left=-172.3 scale=1.21
+[743] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=26 left=-147.4 scale=1.36
+[744] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=24 left=-131.5 scale=1.38
+[745] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[746] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=28 left=-168.3 scale=1.45
+[747] jump 740 -> 1004: inliers old 16 new 14 -> rejected
+[747] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.77
+[748] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.95
+[749] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=21 left=-143.2 scale=1.51
+[750] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[751] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[752] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[753] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=24 left=-135.1 scale=1.50
+[754] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[755] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[756] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[757] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=24 left=-97.7 scale=1.41
+[758] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=23 left=-151.3 scale=1.26
+[759] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=26 left=-128.4 scale=1.30
+[760] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=23 left=-172.2 scale=1.42
+[761] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.75
+[762] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=27 left=-167.3 scale=1.45
+[763] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=0.65
+[764] node 740 hops 3 follow (<Action.RIGHT: 8>, 1) wp +1 p=0.00 best=1.00
+[765] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=24 left=-87.3 scale=1.41
+[766] jump 740 -> 1004: inliers old 17 new 15 -> rejected
+[766] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=29 left=-145.3 scale=1.18
+[767] jump 740 -> 1004: inliers old 16 new 15 -> rejected
+[767] node 740 hops 3 approach-side3-turn (<Action.LEFT: 4>, 3) approach view3 n=33 left=-143.5 scale=1.37
+[768] node 740 hops 3 approach-side3-back (<Action.BACKWARD: 2>, 2) approach view3 n=25 left=-87.8 scale=1.44
+[769] node 740 hops 3 approach-side2-turn (<Action.LEFT: 4>, 3) approach view2 n=21 left=+167.8 scale=1.54
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ended unscored: viewer window closed                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+769 round trips · median 0.6 ms (server 0.6 ms, network 0.0 ms) · your code 
+239.1 ms per step
+result: None

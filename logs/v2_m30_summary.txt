@@ -1,0 +1,16 @@
+=== v2_m30.txt: maze 30, motion seed 2664226132, 2284 decisions ===
+result: failed, 0.0 points, 4988 ticks
+closest to the goal: 1.03 m at step 890 (believed hops 24); at the end 1.42 m
+belief error: median 0.89 m, more than 1 m off in 34% of steps
+wrong far jumps: 0
+longest time not moving (within 0.1 m): 262 steps from step 1680, believed nodes 2241 x79, 2240 x68, 2250 x55
+decisions: reverse 1244, follow 464, steer-fwd 131, wp-search 129, steer-turn 108, approach-side1-turn 85, approach-side1-back 29, approach-side3-turn 24, stuck 20, recover 20, goal-scan 20, approach-reacquire 6, approach-side3-fwd 3, approach-side3-rotate 1
+events: reverse steps (Change 28) 1282, detours (Change 29) 93, dropped shortcuts (Change 25c) 0, far jumps accepted (Change 27) 1, far jumps rejected (Change 27) 115, stuck recoveries 20
+top view: closest to the goal: 1.03 m at step 889 (tick 1805), heading 15 deg off the goal heading
+top view: closest while facing within 20 deg of the goal heading: 1.03 m at step 889
+top view: never inside the scoring zone (<= 0.2 m and <= 20 deg at the same moment)
+top view: steps spent within 0.5 m of the goal: 0   |   at the end: 1.42 m from the goal, 15 deg off its heading
+top view: saved logs\v2_m30_topview.png
+likely causes:
+  - LOCALISATION: belief > 1 m off in 34% of steps
+  - STALL: 262 decisions within 0.1 m from step 1680 (reverse 255, stuck 4)

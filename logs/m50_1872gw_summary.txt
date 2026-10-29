@@ -1,0 +1,18 @@
+=== m50_1872gw.txt: maze 50, motion seed 2664226132, 9767 decisions ===
+result: failed, 0.0 points, 19988 ticks
+closest to the goal: 0.29 m at step 1766 (believed hops 42); at the end 2.96 m
+belief error: median 0.43 m, more than 1 m off in 3% of steps
+wrong far jumps: 0
+longest time not moving (within 0.1 m): 474 steps from step 4745, believed nodes 1317 x234, 1318 x201, 1324 x26
+decisions: reverse 6386, follow 1962, wp-search 903, steer-fwd 191, steer-turn 155, stuck 85, recover 85
+events: reverse steps (Change 28) 6557, detours (Change 29) 452, dropped shortcuts (Change 25c) 6, far jumps accepted (Change 27) 18, far jumps rejected (Change 27) 742, stuck recoveries 85
+top view: closest to the goal: 0.29 m at step 1765 (tick 3320), heading 1 deg off the goal heading
+top view: closest while facing within 20 deg of the goal heading: 0.29 m at step 1765
+top view: never inside the scoring zone (<= 0.2 m and <= 20 deg at the same moment)
+top view: steps spent within 0.5 m of the goal: 177   |   at the end: 2.96 m from the goal, 80 deg off its heading
+top view: saved logs\m50_1872gw_topview.png
+likely causes:
+  - LAST METRE: got within 0.29 m but never checked in -- see the approach-* lines
+  - MAP GAP: the plan flipped 1x while the belief was right (step 2066: 1559->1330 hops 54->187); two drives of the same place are not linked (5 run-time links made)
+  - STALL: 474 decisions within 0.1 m from step 4745 (reverse 471, stuck 2)
+  - BUDGET: still progressing at the end (hops 129 -> 104 in the last 20%): give it more ticks (the challenge allows 60,000)

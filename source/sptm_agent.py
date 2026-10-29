@@ -105,6 +105,32 @@ JUMP_MIN, JUMP_MARGIN = 40, 10
 # goal area and an early "arrived" started a 360-deg goal scan again and again.
 CONFUSED_STEPS, THINK_AHEAD = 3, 5
 
+# Change 45 (--goal-place): the goal is ONE exploration photo, the best SuperGlue match with any of the 4
+# goal photos among AnyLoc's top candidates -- and setup checked only the top 6 per goal photo. On the
+# local mazes the photos really at the goal spot can rank much lower (maze 29: 45th-53rd), so a look-alike
+# won and the robot drove to the wrong place from the first step (maze 29: 3.4 m away, 58 inliers, while
+# the goal-spot photo 1037 has 95). Checked on 13 mazes, 7 of them never used before: the top-6 rule picked
+# a goal photo metres away in 4 (29, 33, 34, 67); checking the top GOAL_TOPK picks the strongest match and
+# fixed 3 of them (67 has no distinctive photo of the goal spot at all), never choosing worse. ~10-15 s
+# once in setup, no steps. (Linking other passes of the goal spot was tried too and dropped: on maze 70 a
+# link put the robot into the close approach at a look-alike 0.5-0.8 m from the goal.)
+GOAL_TOPK = 64
+
+# Change 46 (--confirm-checkin): the approach checked in on the FIRST reading inside the gate. Near the
+# goal the front-photo readings are noisy (15-29 inliers), and twice one fluke ended a run that had found
+# the goal: maze 25 checked in 0.28 m off (one reading: 21 inliers, +7.6 deg, scale 1.08, between -46 and
+# -32 deg), maze 70 0.81 m off facing backwards (25 inliers, +3.1 deg, scale 1.02, after 0.72-0.90).
+# Now a passing reading is confirmed CHECKIN_CONFIRM more times in a row, each from a fresh view: a 1-tick
+# turn toward the goal heading (waiting would re-read the same picture). About 2 ticks per real arrival.
+# Maze 70 then showed the look-alike is not always a fluke: 3 fresh readings agreed (25 inliers, -0.6..+4.6
+# deg, scale 0.95-1.02) 0.81 m away, facing backwards. What separates them is the evidence: every correct
+# check-in so far had 43-122 inliers (6 dev runs: 84-104), every wrong one 21-25 (false matches reach ~23).
+# So a check-in also needs CHECKIN_STRONG inliers; a weaker "arrival" hands back to navigation instead:
+# the close approach (and its 360-deg look-around) pauses for APPROACH_PAUSE decisions while the robot is
+# not on the goal photo itself, so the route drives it to the goal photo (maze 70 hovered at a look-alike
+# 0.5-0.8 m away, refusing it 94 times, until the budget ran out).
+CHECKIN_CONFIRM, CHECKIN_STRONG, APPROACH_PAUSE = 2, 35, 15
+
 REV_MAX = 12  # Change 28: undo-steps in a row without reaching an earlier photo, then re-plan (Change 32)
 
 # Change 32: fixes from the code audit of 2026-10-26 (things that confused the robot)
@@ -230,6 +256,10 @@ class SptmAgent(Agent):
         map_ticks: bool = False,
         #Change 44: when the believed photo stays the same, check the next route photos with SuperGlue
         think_confused: bool = False,
+        #Change 45: choose the goal photo among far more candidates
+        goal_place: bool = False,
+        #Change 46: check in only when the gate holds on fresh readings in a row
+        confirm_checkin: bool = False,
     ) -> None:
         self.explore_on = explore
         self.steer_on = steer
@@ -237,6 +267,8 @@ class SptmAgent(Agent):
         self.goal_watch = goal_watch
         self.steer_hold, self.detour_once = steer_hold, detour_once
         self.think_confused, self.same_n = think_confused, 0  # Change 44
+        self.goal_place = goal_place  # Change 45
+        self.confirm_checkin, self.ci_ok, self.appr_pause = confirm_checkin, 0, 0  # Change 46
         self.scorer = scorer
         self.frames, self.bounds = load_frames(Path(data_dir), subsample)
         print(f"{len(self.frames)} frames from {len(self.bounds)} trajectories")
@@ -525,6 +557,7 @@ class SptmAgent(Agent):
     def setup(self, info: SessionInfo) -> None:
         self._reset()
         self.same_n = 0  # Change 44
+        self.ci_ok, self.appr_pause = 0, 0  # Change 46
         self.focal = _intrinsic_focal(info)
         self.targets = info.targets
         # self.tfeat = [self.matcher.features(t) for t in self.targets]
@@ -541,7 +574,7 @@ class SptmAgent(Agent):
             pk = self._prob_to_all(tembs[k])
             if pk.max() > fallback[0]:
                 fallback = (float(pk.max()), int(np.argmax(pk)))
-            for i in np.argsort(-pk)[:6]:
+            for i in np.argsort(-pk)[:GOAL_TOPK if self.goal_place else 6]:  # Change 45
                 # n = self.matcher.match(self.tfeat[k], self._feat(int(i))).n
                 ################################################################################
                 #Change 3c-2:
@@ -551,7 +584,7 @@ class SptmAgent(Agent):
                     best = (n, int(i), k)
         # self.goal = best[1] if best[0] >= 12 else fallback[1]
         #################################################################
-        #Change 3c-3: 
+        #Change 3c-3:
         self.goal = best[1] if best[0] >= self.goal_min else fallback[1]
         #################################################################
     
@@ -700,7 +733,9 @@ class SptmAgent(Agent):
                       f"at {self.hops} hops on the map: approaching")
         if self.hops > 3 and self.scan >= 105:  # Change 8c: was `if self.hops > 3:`
             self.scan = 0  # left the goal area after a full look-around: allow a fresh one next time
-        if self.hops <= self.near_hops or self.lock > 0 or 0 < self.scan < 105:  # Change 8c: + scan in progress
+        self.appr_pause = max(0, self.appr_pause - 1)  # Change 46: > 0 only after a refused weak check-in
+        if ((self.hops <= self.near_hops or self.lock > 0 or 0 < self.scan < 105)  # Change 8c: + scan in progress
+                and not (self.appr_pause and self.hops >= 1)):
             r = self._approach(obs)
             if r is not None:
                 self.lock = 12  # Last-Mile: once the goal is seen, stay with the geometric controller
@@ -1324,7 +1359,7 @@ class SptmAgent(Agent):
                         self.state += " -> line up sideways first (left photo)"
                         return self._out((Action.LEFT, SIDE_TICKS), "approach-sideways")
                     self.state += f" checkin-stage>={frac_from:.0%}"
-                    return self._out(Action.CHECKIN, "arrived")
+                    return self._checkin(left, m.n)  # Change 46: confirmed first with --confirm-checkin
         #Change 23: a SIDE/BACK photo is used to fix the robot's POSITION along that photo's direction
         # first (align with it, then drive until the scene has the same size), and only then turn
         # by that photo's offset to face front. Before, the robot turned 90-180 deg at once from
@@ -1368,10 +1403,27 @@ class SptmAgent(Agent):
         # tol) with at least CHECKIN_MIN inliers. Before: >= 25 inliers or > 25 approach steps, which
         # the robot never reached at the goal (20-22 inliers there). The score gate is 20 deg / 0.2 m.
         if k == 0 and abs(left) <= 4 and m.n >= CHECKIN_MIN:
-            return self._out(Action.CHECKIN, "arrived")
+            return self._checkin(left, m.n)  # Change 46: confirmed first with --confirm-checkin
         return self._out((Action.FORWARD, 1), "approach-nudge")
 
+    def _checkin(self, left: float, n: int):
+        """Change 46: CHECKIN -- with --confirm-checkin only with CHECKIN_STRONG inliers (else None: not
+        here after all, navigation takes over) and after CHECKIN_CONFIRM more passing readings in a row,
+        each after a 1-tick turn toward the goal heading (+ left = turn right, as in _approach)."""
+        if self.confirm_checkin and n < CHECKIN_STRONG:
+            self.state += f" -> too few inliers to check in ({n} < {CHECKIN_STRONG}): back to the route"
+            self.appr_pause, self.lock, self.creep, self.search_left = APPROACH_PAUSE, 0, 0, 0
+            self.scan = max(self.scan, 105)  # no 360-deg look-around here either
+            return None
+        if self.confirm_checkin and self.ci_ok < CHECKIN_CONFIRM:
+            self.ci_ok += 1
+            self.state += f" -> confirm check-in {self.ci_ok}/{CHECKIN_CONFIRM}"
+            return self._out((Action.RIGHT if left > 0 else Action.LEFT, 1), "approach-confirm")
+        return self._out(Action.CHECKIN, "arrived")
+
     def _out(self, a, why: str):
+        if why != "approach-confirm":  # Change 46: only passing readings IN A ROW count
+            self.ci_ok = 0
         act = a[0] if isinstance(a, tuple) else a
         self.prev_act = act.name if act in (Action.FORWARD, Action.BACKWARD) else None
         self.geo_last = why in ("steer-turn", "steer-fwd")  # Change 40
@@ -1446,6 +1498,10 @@ def main(agent_cls: type | None = None) -> None:
     #Change 42: plan on a map in metres
     parser.add_argument("--map-links", action="store_true",
                         help="build a metric map before connecting and add its verified same-place links")
+    parser.add_argument("--confirm-checkin", action="store_true",
+                        help="check in only with 35+ inliers and on 3 fresh readings in a row (1-tick turns between)")
+    parser.add_argument("--goal-place", action="store_true",
+                        help="choose the goal photo among the top 64 candidates per goal photo (not 6)")
     parser.add_argument("--think-confused", action="store_true",
                         help="when the believed photo stays the same, check the next route photos with SuperGlue")
     parser.add_argument("--map-ticks", action="store_true",
@@ -1486,6 +1542,8 @@ def main(agent_cls: type | None = None) -> None:
         steer_hold=args.steer_hold, detour_once=args.detour_once,  # Change 40/41
         map_links=args.map_links, map_ticks=args.map_ticks,  # Change 42
         think_confused=args.think_confused,  # Change 44
+        goal_place=args.goal_place,  # Change 45
+        confirm_checkin=args.confirm_checkin,  # Change 46
     )
 ##################################################################################################################
     #Change 13: pass the motion seed to the local simulator (ignored for real challenge runs)

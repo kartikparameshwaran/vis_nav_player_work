@@ -1,0 +1,16 @@
+=== v4_m25.txt: maze 25, motion seed 2664226132, 2229 decisions ===
+result: failed, 0.0 points, 4609 ticks
+closest to the goal: 0.27 m at step 2219 (believed hops 2); at the end 0.28 m
+belief error: median 0.14 m, more than 1 m off in 0% of steps
+wrong far jumps: 0
+longest time not moving (within 0.1 m): 476 steps from step 1704, believed nodes 2577 x255, 2574 x109, 2576 x61
+decisions: follow 868, approach-turn 460, reverse 376, steer-fwd 203, wp-search 129, steer-turn 117, approach-back 60, stuck 6, recover 6, approach-sideways 3, approach-search 1
+events: reverse steps (Change 28) 380, detours (Change 29) 6, dropped shortcuts (Change 25c) 3, far jumps accepted (Change 27) 2, far jumps rejected (Change 27) 14, stuck recoveries 6
+top view: closest to the goal: 0.27 m at step 2218 (tick 4577), heading 17 deg off the goal heading
+top view: closest while facing within 20 deg of the goal heading: 0.27 m at step 2218
+top view: never inside the scoring zone (<= 0.2 m and <= 20 deg at the same moment)
+top view: steps spent within 0.5 m of the goal: 574   |   at the end: 0.28 m from the goal, 11 deg off its heading
+top view: saved logs\v4_m25_topview.png
+likely causes:
+  - LAST METRE: checked in along the goal heading +0.14 m, sideways +0.24 m, heading 11 deg -- see the approach-* lines before 'arrived'
+  - STALL: 476 decisions within 0.1 m from step 1704 (approach-turn 417, approach-back 55); 'approach-turn' and 'approach-back' alternate every 4.7 decisions
