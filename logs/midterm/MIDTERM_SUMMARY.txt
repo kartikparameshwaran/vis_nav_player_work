@@ -1,0 +1,41 @@
+MIDTERM RUN -- Visual Navigation Challenge, Mid-term challenge (id da90a443e215)
+==============================================================================
+Date / time      : 2026-10-29, started 00:43 New York time (setup), result written 01:27
+Session id       : ab4350aee046
+Job id           : 2e5b9050-c08c-45ef-8247-e45573ef2846
+Command          : uv run source/my_agent_1348.py --goal-place --confirm-checkin
+Agent            : version 4 (SPTM + AnyLoc + SuperGlue + metric map + think-when-confused)
+                   + --goal-place (64 goal candidates) + --confirm-checkin (35+ inliers, 3 readings)
+Flags            : --smooth-steer --verbose --steer-hold --detour-once --map-ticks --think-confused
+                   --goal-place --confirm-checkin
+Code             : commit 78c8d00 (GitHub: kartikparameshwaran/vis_nav_player_work, Robot-Perception-Challenge)
+Maze             : 3 exploration drives, 13,472 photos (about 3x the Development Challenge maze)
+
+RESULT
+  Points         : 6 / 10  (Distance 3/3, Heading 3/3, SPL 0/4)   tier: perfect
+  Check-in       : 0.022 m from the goal, 0.67 deg off the goal heading
+  Steps          : 9,095 of 100,000   SPL 0.097  (shortest route ~878 steps)
+  Decisions      : 4,303
+  Thinking time  : total 981 s, mean 228 ms, 95% 560 ms, max 21.2 s per decision
+  Check-in proof : confirmed on 3 fresh front-photo readings with 68, 72 and 60 SuperGlue inliers
+
+WHERE THE STEPS WENT
+  Undo (backing up along a drive)                       3,252  (35.8%)
+  Waypoint search (spinning to find the next photo)     1,992  (21.9%)
+  Measured steering turns                               1,345  (14.8%)
+  Driving forward (L network + measured steering)       2,196  (24.1%)
+  Wall bumps and recovery                                 231  ( 2.5%)
+  Last-metre approach and check-in                         79  ( 0.9%)
+
+  Sudden belief jumps of 30+ hops away from the goal: 16
+  Hops to the goal over the run (decision:hops): 1:2392  431:2119  861:1987  1291:2038  1721:1823  2151:1537  2581:1262  3011:655  3441:206  3871:26  4301:7  4303:7
+
+MAIN LOSSES / NEXT FIXES
+  1. Undo (36%): replaying a drive backwards photo by photo; plan the backup (net turn, one move, step limit).
+  2. Waypoint search (22%): turn the short way using the map's heading instead of a fixed-direction spin.
+  3. Wrong far jumps (look-alike places): confirm a far jump for longer before believing it.
+
+FILES
+  logs/midterm/midterm_run_sptm_1793251666.json : every decision (node, hops, action, reason) + server result
+  The server never reveals positions, so no true top-view trajectory exists for this maze; the run's
+  page on the challenge site shows the server's own view of the run.
