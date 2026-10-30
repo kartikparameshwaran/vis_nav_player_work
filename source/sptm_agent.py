@@ -1506,6 +1506,10 @@ def main(agent_cls: type | None = None) -> None:
                         help="when the believed photo stays the same, check the next route photos with SuperGlue")
     parser.add_argument("--map-ticks", action="store_true",
                         help="experimental: like --map-links, and cost every edge in ticks (drove 2x longer on maze 8)")
+    #Change 47: the mid-term exploration photos are a tick apart (3.4 deg per turn photo, measured with SuperGlue),
+    # the local and dev ones ~3 ticks (10.1-10.6 deg) -- every hop count in this agent was tuned on those
+    parser.add_argument("--subsample", type=int, default=1,
+                        help="keep every N-th exploration photo (the mid-term's photos are ~3x denser than dev/local)")
     #######################################################################################################
     parser.add_argument("--verbose", action="store_true")
     parser.add_argument("--log-dir", type=Path, default=None)
@@ -1544,6 +1548,7 @@ def main(agent_cls: type | None = None) -> None:
         think_confused=args.think_confused,  # Change 44
         goal_place=args.goal_place,  # Change 45
         confirm_checkin=args.confirm_checkin,  # Change 46
+        subsample=args.subsample,  # Change 47
     )
 ##################################################################################################################
     #Change 13: pass the motion seed to the local simulator (ignored for real challenge runs)
